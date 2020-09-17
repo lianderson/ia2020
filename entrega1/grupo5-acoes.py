@@ -21,12 +21,6 @@ by grupo 5
 '''
 
 ## Conexao com o banco
-mydb = mysql.connector.connect(
-  host="mysql.cassolli.kinghost.net",
-  user="cassolli",
-  password="C4ss0ll120II20",
-  database="cassolli"
-)
 #ponteiro
 mycursor = mydb.cursor()
 #Query padrao
