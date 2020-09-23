@@ -44,3 +44,7 @@ while int(i) >= 1:
 with open(caminho) as fp:
     for cnt, line in enumerate(fp):
         print("Linha {}: {}".format(cnt, line))
+
+#===============================================================================
+# Teste de Push - Mauricio Zaquia
+#===============================================================================
