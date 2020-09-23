@@ -1,0 +1,9 @@
+empresa=CCRO3;data_hora=2020/09/10 19:30;valor_acao=14,35;descricao=Trafego de ve�culos comerciais no sistema Anhanguera - Bandeirantes, operado pela Concession�ria Autoban, aumentou 7,3% no per�odo entre 28 de agosto a 03 de setembro de 2020 , em compara��o com igual per�odo do ano passado, informou a CCR.
+empresa=BBSE3;data_hora=2020/09/10 19:30;valor_acao=26,28;descricao=BBSE3 está se saindo melhor em termos de segurança e dividendos em relação ao IRBR3
+empresa=UNIP3;data_hora=2020/09/10 19:30;valor_acao=34,70;descricao=UNIPAR Planeja investir R$ 1,29 bilhão no projeto de construção de um parque de geração de energia eólica na bahia
+empresa=CCRO3;data_hora=2020/09/11 19:30;valor_acao=14,23;descricao=Trafego em rodovias admininstradas sobe 3,3% na semana de 04/09 a 10/09
+empresa=BBSE3;data_hora=2020/09/11 19:30;valor_acao=25,47;descricao=IBOVESPA em queda, ações de banco em queda também
+empresa=UNIP3;data_hora=2020/09/11 19:30;valor_acao=35,20;descricao=Fato Relevante - Acordo de Investimento Unipar e AES Tietê 03/09/2020
+empresa=CCRO3;data_hora=2020/09/14 19:30;valor_acao=14,84;descricao=Trafego subiu 3,3% na semana de 04/09/2020 a 10/09/2020 mas no acumulado do mês perdeu 5,3% em relação ao ano anteriorr
+empresa=BBSE3;data_hora=2020/09/14 19:30;valor_acao=25,86;descricao=Dados de julho indicam que BB Seguridade e Porto Seguro começam bem o 3º trimestre
+empresa=UNIP3;data_hora=2020/09/14 19:30;valor_acao=35,20;descricao={Sem informações}
