@@ -1,4 +1,4 @@
-import Aulas.git.dados as dado
+import Aulas.ia2020.dados as dado # Nao esta no git, pois tem dados sensiveis
 import requests
 import re
 import datetime #https://www.w3schools.com/python/python_datetime.asp
