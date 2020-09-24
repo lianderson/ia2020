@@ -4,9 +4,10 @@
 
 import math
 
+#===============================================================================
+# criando a funcao para retornar a raiz de um valor
+#===============================================================================
+
 def calcularRaiz(v1):
     raizQuadrada = math.sqrt(float(v1))
     return raizQuadrada
-    #raiz_quadrada = (lambda x : x**2)
-    #resultado = map(raiz_quadrada, float(v1))
-    #return list(resultado)

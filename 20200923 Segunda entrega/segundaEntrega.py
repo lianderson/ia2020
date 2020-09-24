@@ -5,7 +5,6 @@ import csv
 # lendo o arquivo
 #===============================================================================
 
-#data = csv.reader(open('D:\\Projetos\\python\\InteligenciaArtificial\\#github\\ia2020\\20200923 Segunda entrega\\db_acoes.txt', newline=''), delimiter='|', quotechar='|')
 data = csv.reader(open('D:\\Projetos\\python\\InteligenciaArtificial\\#github\\ia2020\\20200923 Segunda entrega\\db_acoes.txt', newline=''), delimiter=';', quotechar=';')
 
 #===============================================================================
@@ -21,4 +20,3 @@ for row in data:
 
     except Exception as e:
         print(e)            
-
