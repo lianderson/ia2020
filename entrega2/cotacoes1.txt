@@ -1,0 +1,18 @@
+Empresa: ITSA4| Data/hora: 14/09/2020 13:00| Valor Cotação: 9.29| Descrição: Bancos locais ganham preferencia de empresas em processo de IPO
+Empresa: MWET4| Data/hora: 14/09/2020 13:00| Valor Cotação: 6.67| Descrição: Dados da industria mostram retomada em V
+Empresa: LREN3| Data/hora: 14/09/2020 13:00| Valor Cotação: 44.43| Descrição: Vendas do varejo sobem e operam a niveis pre crise
+Empresa: ITSA4| Data/hora: 15/09/2020 19:55| Valor Cotação: 9.26| Descrição: Saques no comercio com PIX comecarao em 2021
+Empresa: MWET4| Data/hora: 15/09/2020 19:55:00| Valor Cotação: 6.30| Descrição: Produção industrial dos EUA avança em agosto
+Empresa: LREN3| Data/hora: 15/09/2020 19:55:00| Valor Cotação: 44.26| Descrição: Vendas no varejo recuam 8,3% na Semana do Brasil, mostra ICVA
+Empresa: ITSA4| Data/hora: 16/09/2020 18:00| Valor Cotação: 9.26| Descrição: Bancos retomam demissões e cortes já superam 60 mil em 2020
+Empresa: MWET4| Data/hora: 16/09/2020 18:00| Valor Cotação: 6.51| Descrição: GM produzirá linha própria de sistemas e motores para elétricos
+Empresa: LREN3| Data/hora: 16/09/2020 18:00| Valor Cotação: 44.47| Descrição: Lojas Renner lidera índice ESG lançado pela B3 e S&P Dow Jones
+Empresa: ITSA4| Data/hora: 17/09/2020 16:34| Valor Cotação: 9.28| Descrição: Banco Central Europeu oferece alívio de capital a bancos para enfrentar pandemia
+Empresa: MWET4| Data/hora: 17/09/2020 16:34| Valor Cotação: 6.43| Descrição: Governo marca leilão em 2021 para suprimento de energia em sistemas isolados
+Empresa: LREN3| Data/hora: 17/09/2020 16:34| Valor Cotação: 44.55| Descrição: Cielo aponta queda de 15,1% nas vendas do varejo em agosto
+Empresa: ITSA4| Data/hora: 22/09/2020 19:37| Valor Cotação: 8.98| Descrição: Deputados aprovam MP que amplia uso de poupança digital para recebimento de benefícios sociais
+Empresa: MWET4| Data/hora: 22/09/2020 19:37| Valor Cotação: 6.25| Descrição: Atividade industrial segue em recuperação com alta do emprego, aponta CNI
+Empresa: LREN3| Data/hora: 22/09/2020 19:37| Valor Cotação: 41.96| Descrição: Lojas Renner pagará R$ 66 milhões em juros sobre o capital próprio
+Empresa: ITSA4| Data/hora: 23/09/2020 17:00| Valor Cotação: 8.81| Descrição: Itaúsa pode anunciar investimento nos próximos meses e mira educação, saúde e saneamento
+Empresa: MWET4| Data/hora: 23/09/2020 17:00| Valor Cotação: 6.21| Descrição: Atividade da indústria brasileira cresce em setembro e retorna aos níveis pré-crise
+Empresa: LREN3| Data/hora: 23/09/2020 17:00| Valor Cotação: 41.96| Descrição: Confiança do consumidor no Brasil sobe pela 5ª vez em setembro, mas segue abaixo de níveis pré-Covid
