@@ -15,7 +15,7 @@ for row in data:
         ##para calcular media
         count += 1
         ##Exibir raiz de cada valor
-        mod.raiz(row[1])
+        mod.raiz(row[1],row[0])
     except Exception as e:
         print(e)
 
