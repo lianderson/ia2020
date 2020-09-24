@@ -37,10 +37,9 @@ while menu != 4:
         strf2 = f2.read()
         print(strf2)
         f2.close()
-        time.sleep(4);
 
     if menu == 3:
-        funcoes.calculaRaiz()
+        funcoes.printaRaiz()
 
     print_menu()
     menu = int(input("Digite o numero da acao: "))
