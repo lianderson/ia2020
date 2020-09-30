@@ -22,7 +22,7 @@ cls()
 while menu != 4:
 
     if menu == 2:
-        f = open('cotacao.csv', 'a')
+        f = open('trabalho/cotacao.csv', 'a')
         sigla = str(input("Sigla:"))
         data = str(input("Data:"))
         cotacao = str(input("Cotacao:"))
@@ -33,7 +33,7 @@ while menu != 4:
         f.close()
 
     if menu == 1:
-        f2 = open('cotacao.csv', 'r')
+        f2 = open('trabalho/cotacao.csv', 'r')
         strf2 = f2.read()
         print(strf2)
         f2.close()
