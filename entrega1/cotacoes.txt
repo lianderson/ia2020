@@ -1,0 +1,6 @@
+Empresa: ITSA4| Data/hora: 14/09/2020 13:00| Valor Cotação: 9.29| Descrição: Bancos locais ganham preferencia de empresas em processo de IPO
+Empresa: MWET4| Data/hora: 14/09/2020 13:00| Valor Cotação: 6.67| Descrição: Dados da industria mostram retomada em V
+Empresa: LREN3| Data/hora: 14/09/2020 13:00| Valor Cotação: 44.43| Descrição: Vendas do varejo sobem e operam a niveis pre crise
+Empresa: ITSA4| Data/hora: 15/09/2020 19:55| Valor Cotação: 9.26| Descrição: Saques no comercio com PIX comecarao em 2021
+Empresa: MWET4| Data/hora: 15/09/2020 19:55:00| Valor Cotação: 6.30| Descrição: Produção industrial dos EUA avança em agosto
+Empresa: LREN3| Data/hora: 15/09/2020 19:55:00| Valor Cotação: 44.26| Descrição: Vendas no varejo recuam 8,3% na Semana do Brasil, mostra ICVA
