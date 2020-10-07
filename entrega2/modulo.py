@@ -13,7 +13,7 @@ def media(total,count):
     return total
 
 
-def raiz(val,nome):
+def raiz(val,nomentrega2/crv.pye):
     val = float(val.replace(',', '.'))
     print("Nome "+nome+" raiz: R$ " + str(math.sqrt(val)))
 

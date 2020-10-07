@@ -1,4 +1,4 @@
-http://dontpad.com/liandersonfranco
+#http://dontpad.com/liandersonfranco
 #criar modulo para ler arquivo, calcular a raiz quadrada das ações
 import csv
 import math
