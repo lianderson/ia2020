@@ -4,6 +4,7 @@ import csv
 import math
 import Aulas.ia2020.entrega1.modulo as mod
 
+
 total = 0.00
 count = 0
 
