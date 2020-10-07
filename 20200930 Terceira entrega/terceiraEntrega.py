@@ -8,32 +8,53 @@
 import moduloTerceiraEntrega
 
 # ===============================================================================
+# criação das variaveis
+# ===============================================================================
+
+caminho = 'D:\\Projetos\\python\\InteligenciaArtificial\\#github\\ia2020\\20200930 Terceira entrega\\info.csv'
+
+acao = ''
+data = ''
+titulo = ''
+noticia = ''
+
+# ===============================================================================
 # lista de acoes
 # ===============================================================================
 
-acao = ["BBSE3", "CCRO3", "UNIP3"]
+acoes = ["BBSE3", "CCRO3", "UNIP3"]
 
 # ===============================================================================
 # lendo os sites
 # ===============================================================================
 
-for a in (acao):
+for a in (acoes):
     # retorna lista de urls
-    lista = moduloTerceiraEntrega.retornaURL(a)
+    listaUrls = moduloTerceiraEntrega.retornaURL(a)
 
-    for i in (lista):
+    for i in (listaUrls):
         # retorna noticias de acordo com cada url
-        noticia = moduloTerceiraEntrega.retornaInformacoesSite(i)
+        arrayNoticia = moduloTerceiraEntrega.retornaInformacoesSite(i)
 
         print("===============================================================================")
         print("TITULO")
         print("===============================================================================")
-        print(noticia[0])
+        print(arrayNoticia[0])
         print("===============================================================================")
         print("DATA")
         print("===============================================================================")
-        print(noticia[2])        
+        print(arrayNoticia[2])
         print("===============================================================================")
         print("NOTICIA")
         print("===============================================================================")
-        print(noticia[1])
+        print(arrayNoticia[1])
+
+        acao = a
+        data = arrayNoticia[2]
+        titulo = arrayNoticia[0]
+        noticia = arrayNoticia[1]
+
+        # escrever arquivo
+        f = open(caminho, 'a')
+        f.write(acao + ';' + str(data) + ';' + titulo + ';' + noticia + '\n')
+        f.close()
