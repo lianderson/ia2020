@@ -9,9 +9,11 @@ import json  # pacote para manipular JSON
 # ===============================================================================
 # criando a funcao para retornar json valores passando o codigo da acao por parametro
 # ===============================================================================
+
+
 def fnYFinJSON(stock):
     urlData = "https://query2.finance.yahoo.com/v7/finance/quote?symbols=" + stock
-    #print(urlData)
+    # print(urlData)
     webUrl = urllib.request.urlopen(urlData)
     if (webUrl.getcode() == 200):
         data = webUrl.read()
@@ -30,31 +32,31 @@ def retornaCamposFormatados(pEmpresa):
 
     tickers = [empresa]
 
-    fields = {'shortName': 'Company', 
-            'bookValue': 'Book Value',
-            'currency': 'Curr',
-            'fiftyTwoWeekLow': '52W L', 
-            'fiftyTwoWeekHigh': '52W H',
-            'regularMarketPrice': 'Price',
-            'regularMarketDayHigh': 'High', 
-            'regularMarketDayLow': 'Low',
-            'priceToBook': 'P/B', 
-            'trailingPE': 'LTM P/E', 
-            'regularMarketDayLow': 'DayLow',
-            'regularMarketPrice': 'regularMarketPrice', 
-            'regularMarketOpen': 'regularMarketOpen',
-            'ask': 'close', 
-            'regularMarketDayHigh': 'regularMarketDayHigh',
-            'marketState': 'marketState', 
-            'averageDailyVolume3Month': 'averageDailyVolume3Month',
-            'regularMarketDayLow': 'regularMarketDayLow', 
-            'fiftyDayAverage': 'fiftyDayAverage',
-            'fiftyTwoWeekLow': 'fiftyTwoWeekLow', 
-            'twoHundredDayAverage': 'twoHundredDayAverage',
-            'fiftyTwoWeekHigh': 'fiftyTwoWeekHigh', 
-            'regularMarketChange': 'regularMarketChange',
-            'regularMarketChangePercent': 'regularMarketChangePercent', 
-            'longName': 'longName'}
+    fields = {'shortName': 'Empresa',
+              'bookValue': 'Válor Contábil',
+              'currency': 'Moeda',
+              'fiftyTwoWeekLow': '52W L',
+              'fiftyTwoWeekHigh': '52W H',
+              'regularMarketPrice': 'Preço Atual',
+              'regularMarketDayHigh': 'Alta do Dia',
+              'regularMarketDayLow': 'Baixa do Dia',
+              'priceToBook': 'P/L Proporção',
+              'trailingPE': 'Índice P/L',
+              'regularMarketDayLow': 'DayLow',
+              'regularMarketPrice': 'Preço Atual',
+              'regularMarketOpen': 'Preço na Abertura',
+              'ask': 'Preço de Venda',
+              'regularMarketDayHigh': 'Alta do Dia',
+              'marketState': 'Estado do Mercado',
+              'averageDailyVolume3Month': 'Estimativa Volume',
+              'regularMarketDayLow': 'Baixa do Dia',
+              'fiftyDayAverage': 'Média da V52',
+              'fiftyTwoWeekLow': 'V52 Baixa',
+              'twoHundredDayAverage': 'Média da Variação de 200 Dias',
+              'fiftyTwoWeekHigh': 'V52 Alta',
+              'regularMarketChange': 'Diferença',
+              'regularMarketChangePercent': 'Diferença Porcentagem',
+              'longName': 'Nome Completo'}
 
     results = {}
 
@@ -69,23 +71,23 @@ def retornaCamposFormatados(pEmpresa):
         results[ticker] = singleResult
 
     # print(results)
-    # print(results[empresa]['Company'])
-    # print(results[empresa]['regularMarketPrice'])
+    # print(results[empresa]['Empresa']);
+    #print(results[empresa]['Preço Atual']);
 
-    #preco_atual = results[empresa]['regularMarketPrice']
-    #preco_abertura = results[empresa]['regularMarketOpen']
-    #preco_baixa = results[empresa]['regularMarketDayLow']
-    #close = results[empresa]['close']
-    #preco_alta = results[empresa]['regularMarketDayHigh']
-    #marketState = results[empresa]['marketState']
-    #averageDailyVolume3Month = results[empresa]['averageDailyVolume3Month']
-    #fiftyDayAverage = results[empresa]['fiftyDayAverage']
-    #fiftyTwoWeekLow = results[empresa]['fiftyTwoWeekLow']
-    #fiftyTwoWeekHigh = results[empresa]['fiftyTwoWeekHigh']
-    #twoHundredDayAverage = results[empresa]['twoHundredDayAverage']
-    #regularMarketChange = results[empresa]['regularMarketChange']
-    #regularMarketChangePercent = results[empresa]['regularMarketChangePercent']    
-    #longName = results[empresa]['longName']    
-    #print(longName)
+    #preco_atual                = results[empresa]['Preço Atual'];
+    #preco_abertura             = results[empresa]['Preço na Abertura'];
+    #preco_baixa                = results[empresa]['Baixa do Dia'];
+    #preco_venda                      = results[empresa]['Preço de Venda'];
+    #preco_alta                 = results[empresa]['Alta do Dia'];
+    #estado_mercado                = results[empresa]['Estado do Mercado'];
+    #estimativa_volume   = results[empresa]['Estimativa Volume'];
+    #media_52            = results[empresa]['Média da V52'];
+    #media_52B            = results[empresa]['V52 Baixa'];
+    #media_52A           = results[empresa]['V52 Alta'];
+    #media_200       = results[empresa]['Média da Variação de 200 Dias'];
+    #diferenca        = results[empresa]['Diferença'];
+    #diferenca_por100 = results[empresa]['Diferença Porcentagem'];
+    #nome_completo                   = results[empresa]['Nome Completo'];
+    # print(nome_completo)
 
     return results

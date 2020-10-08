@@ -5,7 +5,11 @@
 # autores: mauricio zaquia, lindice lopes, gustavo berté
 # ===============================================================================
 
-import moduloQuartaEntrega
+# ===============================================================================
+# importando as bibliotecas
+# ===============================================================================
+
+import moduloQuartaEntrega as mqe
 
 # ===============================================================================
 # criacao de variaveis
@@ -21,6 +25,6 @@ acoes = ["BBSE3.SA", "CCRO3.SA", "UNIP3.SA"]
 # lendo os dados
 # ===============================================================================
 for a in (acoes):
-    arrayInformacoes = moduloQuartaEntrega.retornaCamposFormatados(a)
-    print('============================')
+    arrayInformacoes = mqe.retornaCamposFormatados(a)
+    print('========================================================')
     print(arrayInformacoes) 
