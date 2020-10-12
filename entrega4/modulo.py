@@ -130,6 +130,7 @@ def altera(sql):
     conexao.close()
     return resultado
 
+##exemplos, sem uso, fnções acima atendem o estado atual
 def insertNovo():
     conexao = pymysql.connect(host='viajuntos.com.br', user='admin_ia', passwd='admin_ia', db='admin_ia')
     cursor_banco = conexao.cursor()

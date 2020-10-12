@@ -3,7 +3,9 @@
 import urllib.request #pacote para trabalhar com mewb
 import json #pacote para manipular JSON
 import Aulas.ia2020.entrega4.modulo as mod
+
 query = mod.Select("SELECT nome FROM acao where id_equipe = '5'")
+
 i = 0
 while i < len(query):
     mod.getDados(query[i])
