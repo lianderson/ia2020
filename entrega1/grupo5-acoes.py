@@ -23,10 +23,10 @@ by grupo 5
 
 ## Conexao com o banco
 mydb = mysql.connector.connect(
-    host= dado.hostDB,
-    user= dado.userDB,
-    password= dado.senhaDB,
-    database= dado.baseDB
+    host= dado.hostDBdev,
+    user= dado.userDBdev,
+    password= dado.senhaDBdev,
+    database= dado.baseDBdev
   )
 
 #ponteiro
