@@ -15,68 +15,69 @@ import pymysql
 from datetime import datetime
 
 # ===============================================================================
-# conexao com o banco
-# ===============================================================================
-conexao = pymysql.connect(
-    host='viajuntos.com.br',
-    user='admin_ia',
-    password='admin_ia',
-    db='admin_ia')
-
-# ===============================================================================
 # criacao de variaveis
 # ===============================================================================
-informacoes = ''
-acoes = []
+arrayInformacoes = []
+arrayAcoes = []
+equipe_id = 0
+acao_id = 0
+acao_preco_atual = 0
+acao_simbolo = ''
 
 # ===============================================================================
-# fazendo o select das acoes
-# ===============================================================================
-#configurando um cursor (quem percorre a tabela)
-cursor_banco = conexao.cursor()
-
-#fazendo uma consulta
-sql = "SELECT * FROM acao WHERE id_equipe = 2"
-cursor_banco.execute(sql)
-
-for linhas in (cursor_banco.fetchall()):    
-    acoes.append(linhas)
-
-cursor_banco.close()
-
-# ===============================================================================
-# criando a funcao para disparar
+# criando a funcao para rodar a busca
 # ===============================================================================
 def rodarBusca():
+    arrayAcoes = [] #limpando o arrayacoes (lista) para nao duplicar as cotacoes
+    # ===============================================================================
+    # conexao com o banco
+    # ===============================================================================
+    conexao = pymysql.connect(host='viajuntos.com.br',user='admin_ia', password='admin_ia', db='admin_ia')
+    # ===============================================================================
+    # fazendo o select das acoes
+    # ===============================================================================    
+    cursor_banco = conexao.cursor()
+    sql = "SELECT * FROM acao WHERE id_equipe = 2"
+    cursor_banco.execute(sql)
+    for linhas in (cursor_banco.fetchall()):
+        arrayAcoes.append(linhas)
+    cursor_banco.close()
     # ===============================================================================
     # lendo os dados
     # ===============================================================================
-    for a in (acoes):        
-        arrayInformacoes = mqe.retornaCamposFormatados(a[1])
-        #print(arrayInformacoes[a[1]]['Simbolo'])
-        #print(arrayInformacoes[a[1]]['Preço Atual'])
+    for a in (arrayAcoes):
+        acao_id = a[0]
+        acao_simbolo = a[1]
+        equipe_id = a[2]
+
+        arrayInformacoes = mqe.retornaCamposFormatados(acao_simbolo)
+        acao_preco_atual = arrayInformacoes[acao_simbolo]['Preço Atual']
 
         # ===============================================================================
         # inserindo a cotacao na tabela cotacao no banco
         # ===============================================================================
-        cursor_banco  = conexao.cursor()
-
-        sql  = "INSERT INTO cotacao(equipe_id,preco,acao_id)  values(%s,%s,%s) " % (a[2],arrayInformacoes[a[1]]['Preço Atual'],a[0])
-        print(sql)
-
-        cursor_banco.execute(sql)
+        cursor_banco = conexao.cursor()
+        sql = 'INSERT INTO cotacao(equipe_id,preco,acao_id)  values(%s,%s,%s) ' % (equipe_id, acao_preco_atual, acao_id)
+        cursor_banco.execute(sql)        
         conexao.commit()
-
         cursor_banco.close()
-        #conexao.close()
+        
+        print(acao_simbolo + ': Registro inserido em: ' + str(datetime.now()))
 
-schedule.every(.1).minutes.do(rodarBusca)
+    conexao.close()
+
+# ===============================================================================
+# configuracao para rodar a busca
+# ===============================================================================
+schedule.every(1).minutes.do(rodarBusca)
+#schedule.every().hour.do(rodarBusca) #descomentar para pegar os valores de hora e hora
 
 now = datetime.now()
 hora = str(now.hour) + str(now.minute)
 
-while ((hora > '1000') and (hora < '1800')):
-    schedule.run_pending()
-    time.sleep(1)
-    now = datetime.now()
-    hora = str(now.hour) + str(now.minute)
+while (1):    
+    if (hora > '1000') and (hora < '1800'):
+        schedule.run_pending()
+        time.sleep(1)
+        now = datetime.now()
+        hora = str(now.hour) + str(now.minute)
