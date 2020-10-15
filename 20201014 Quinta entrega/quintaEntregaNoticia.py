@@ -29,17 +29,22 @@ conexao = pymysql.connect(
 informacoes = ''
 acoes = []
 
+acao = ''
+data = ''
+titulo = ''
+noticia = ''
+
 # ===============================================================================
 # fazendo o select das acoes
 # ===============================================================================
-#configurando um cursor (quem percorre a tabela)
+# configurando um cursor (quem percorre a tabela)
 cursor_banco = conexao.cursor()
 
-#fazendo uma consulta
+# fazendo uma consulta
 sql = "SELECT * FROM acao WHERE id_equipe = 2"
 cursor_banco.execute(sql)
 
-for linhas in (cursor_banco.fetchall()):    
+for linhas in (cursor_banco.fetchall()):
     acoes.append(linhas)
 
 cursor_banco.close()
@@ -51,31 +56,40 @@ def rodarBusca():
     # ===============================================================================
     # lendo os dados
     # ===============================================================================
-    for a in (acoes):        
-        arrayInformacoes = mqe.retornaCamposFormatados(a[1])
-        #print(arrayInformacoes[a[1]]['Simbolo'])
-        #print(arrayInformacoes[a[1]]['Preço Atual'])
+    for a in (acoes):
+        # retorna lista de urls
+        listaUrls = mqe.retornaURL(a[1])
 
-        # ===============================================================================
-        # inserindo a cotacao na tabela cotacao no banco
-        # ===============================================================================
-        cursor_banco  = conexao.cursor()
+        for i in (listaUrls):
+            # retorna noticias de acordo com cada url
+            arrayNoticia = mqe.retornaInformacoesSite(i)
 
-        sql  = "INSERT INTO cotacao(equipe_id,preco,acao_id)  values(%s,%s,%s) " % (a[2],arrayInformacoes[a[1]]['Preço Atual'],a[0])
-        print(sql)
+            #acao = a[1]
+            noticia = arrayNoticia[1]
+            #print(acao)
+            #print(noticia)
 
-        cursor_banco.execute(sql)
-        conexao.commit()
+            # ===============================================================================
+            # inserindo a noticia na tabela cotacao no banco
+            # ===============================================================================
+            cursor_banco = conexao.cursor()
 
-        cursor_banco.close()
-        #conexao.close()
+            sql = "INSERT INTO noticias(id_equipe,noticia_descricao,acao_id)  values(%s,'%s',%s) " % (a[2], noticia,a[1])
+            print(sql)
+
+            cursor_banco.execute(sql)
+            conexao.commit()
+
+            cursor_banco.close()        
+            #conexao.close()
+
 
 schedule.every(.1).minutes.do(rodarBusca)
 
 now = datetime.now()
 hora = str(now.hour) + str(now.minute)
 
-while ((hora > '1000') and (hora < '1800')):
+while ((hora > '1000') and (hora < '2210')):
     schedule.run_pending()
     time.sleep(1)
     now = datetime.now()

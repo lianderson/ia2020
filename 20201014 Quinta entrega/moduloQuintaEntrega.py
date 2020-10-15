@@ -4,6 +4,9 @@
 # ===============================================================================
 import urllib.request  # pacote para trabalhar com mewb
 import json  # pacote para manipular JSON
+from goose3 import Goose
+from googlesearch import search
+from datetime import datetime
 
 # ===============================================================================
 # criando a funcao para retornar json valores passando o codigo da acao por parametro
@@ -89,3 +92,23 @@ def retornaCamposFormatados(pEmpresa):
     # print(nome_completo)
 
     return results
+
+# ===============================================================================
+# criando a funcao para pesquisar no google search
+# ===============================================================================
+
+def retornaURL(consulta):
+    lista = search(consulta, num_results=1, lang="pt-br")
+    return lista
+
+# ===============================================================================
+# criando a funcao para separar URL
+# ===============================================================================
+
+def retornaInformacoesSite(site_url):
+    g = Goose()
+    noticia = g.extract(url=site_url)
+
+    arrayNoticia = [noticia.title, noticia.cleaned_text, noticia.publish_date]
+
+    return(arrayNoticia)
