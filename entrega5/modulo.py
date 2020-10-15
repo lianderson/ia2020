@@ -51,7 +51,7 @@ def fnYFinJSON(stock):
       yFinJSON = json.loads(data)
       return yFinJSON["quoteResponse"]["result"][0]
 
-def getDados(tickers):
+def getDados(id, tickers):
     fields = {'shortName': 'Company', 'bookValue': 'Book Value', 'currency': 'Curr',
               'fiftyTwoWeekLow': '52W L', 'fiftyTwoWeekHigh': '52W H',
               'regularMarketPrice': 'Price',
@@ -65,35 +65,42 @@ def getDados(tickers):
               'fiftyTwoWeekHigh': 'fiftyTwoWeekHigh', 'regularMarketChange': 'regularMarketChange',
               'regularMarketChangePercent': 'regularMarketChangePercent', 'longName': 'longName'}
     results = {}
+    ticker = tickers
+    #for ticker in ticker:
+    tickerData = fnYFinJSON(ticker)  # le o site
+    singleResult = {}
+    for key in fields.keys():
+        if key in tickerData:
+            singleResult[fields[key]] = tickerData[key]
+        else:
+            singleResult[fields[key]] = "N/A"
+    results[tickers] = singleResult
 
-    for ticker in tickers:
-        tickerData = fnYFinJSON(ticker)  # le o site
-        singleResult = {}
-        for key in fields.keys():
-            if key in tickerData:
-                singleResult[fields[key]] = tickerData[key]
-            else:
-                singleResult[fields[key]] = "N/A"
-        results[ticker] = singleResult
+    print(results[ticker]);
+    precoAtual = results[ticker]['regularMarketPrice']
 
-        print(results[ticker]);
+
+    hoje = datetime.datetime.now()
+    dataHoje = hoje.strftime("%Y-%m-%d %H:%M:%S")
+    query = altera("INSERT INTO cotacao(equipe_id,preco,data_importacao,acao_id) values(%s,%s,%s,%s)",5, precoAtual,dataHoje, id)
+
         # print(results[ticker]['Company']);
         # print(results[ticker]['regularMarketPrice']);
 
-        precoAtual = results[ticker]['regularMarketPrice']
-        precoAbertura = results[ticker]['regularMarketOpen']
-        precoBaixa = results[ticker]['regularMarketDayLow']
-        fechamento = results[ticker]['close']
-        precoAlta = results[ticker]['regularMarketDayHigh']
-        marketState = results[ticker]['marketState']
-        media3Meses = results[ticker]['averageDailyVolume3Month']
-        media50Dias = results[ticker]['fiftyDayAverage']
-        baixa52Semanas = results[ticker]['fiftyTwoWeekLow']
-        alta52Semanas = results[ticker]['fiftyTwoWeekHigh']
-        media200Dias = results[ticker]['twoHundredDayAverage']
-        MudancaMercadoRegular = results[ticker]['regularMarketChange']
-        PercentualRegularMudancaMercado = results[ticker]['regularMarketChangePercent']
-        nomeCompleto = results[ticker]['longName'];
+        #precoAtual = results[ticker]['regularMarketPrice']
+        #precoAbertura = results[ticker]['regularMarketOpen']
+        #precoBaixa = results[ticker]['regularMarketDayLow']
+        #fechamento = results[ticker]['close']
+        #precoAlta = results[ticker]['regularMarketDayHigh']
+        #marketState = results[ticker]['marketState']
+        #media3Meses = results[ticker]['averageDailyVolume3Month']
+        #media50Dias = results[ticker]['fiftyDayAverage']
+        #baixa52Semanas = results[ticker]['fiftyTwoWeekLow']
+        #alta52Semanas = results[ticker]['fiftyTwoWeekHigh']
+        #media200Dias = results[ticker]['twoHundredDayAverage']
+        #MudancaMercadoRegular = results[ticker]['regularMarketChange']
+        #PercentualRegularMudancaMercado = results[ticker]['regularMarketChangePercent']
+        #nomeCompleto = results[ticker]['longName'];
 
 def getConnect():
     modo = "prod"
@@ -123,28 +130,33 @@ def Select(sql):
     return lista
 
 
-def altera(sql):
+def altera(sql,nr,precoAtual,data, id):
     conexao = getConnect()
     insert = conexao.cursor()
-    resultado = insert.execute(sql)
+    val = (nr, precoAtual,data, id)
+    resultado = insert.execute(sql,val)
     conexao.commit()
     insert.close()
     conexao.close()
     return resultado
 
 def principal():
-    query = Select("SELECT nome FROM acao where id_equipe = '5'")
-
+    query = Select("SELECT id,nome FROM acao where id_equipe = '5'")
     i = 0
     while i < len(query):
-        getDados(query[i])
+        acao = str(query[i][1])
+        id = str(query[i][0])
+        getDados(id,acao)
         i += 1
 
 def rodando(qtime,qfuncao):
     schedule.every(.1).minutes.do(principal)
     while True:
         schedule.run_pending()
-        time.sleep(10)
+        time.sleep(1)
+
+
+
 
 
 ##exemplos, sem uso, funções acima atendem o estado atual

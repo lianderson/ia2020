@@ -4,7 +4,8 @@ import urllib.request #pacote para trabalhar com mewb
 import json #pacote para manipular JSON
 import Aulas.ia2020.entrega5.modulo as mod
 
-mod.rodando(1,"principal")
+mod.rodando("1","principal")
+
 
 
 #query = mod.Select("SELECT nome FROM acao where id_equipe = '5'")
