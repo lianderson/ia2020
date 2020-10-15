@@ -1,9 +1,20 @@
+import schedule
+import time
 import math
 from googlesearch import search
 from goose3 import Goose
 # -*- coding: utf-8 -*-
 import urllib.request #pacote para trabalhar com mewb
 import json #pacote para manipular JSON
+import pymysql
+conexao = pymysql.connect(
+    host = '127.0.0.1',
+    user = 'root',
+    password = '',
+    db = 'admin_ia',
+    charset = 'utf8mb4',
+    cursorclass = pymysql.cursors.DictCursor
+)
 
 
 def calcula_raiz(valor):
@@ -19,10 +30,7 @@ def pesquisa(consulta):
 
         print(i)
         g = Goose()
-
-
         noticia = g.extract(url)
-
         return noticia.cleaned_text
 
 
@@ -70,9 +78,9 @@ def ler_acao ():
               singleResult[fields[key]] = "N/A"
           results[ticker] = singleResult
 
-        print(results);
-        print(results[empresa]['Company']);
-        print(results[empresa]['regularMarketPrice']);
+       # print(results);
+        #print(results[empresa]['Company']);
+        #print(results[empresa]['regularMarketPrice']);
 
         preco_atual                = results[empresa]['regularMarketPrice'];
         preco_abertura             = results[empresa]['regularMarketOpen'];
@@ -88,4 +96,20 @@ def ler_acao ():
         mudanca_mercado            = results[empresa]['regularMarketChange'];
         mudanca_mercado_percent    = results[empresa]['regularMarketChangePercent'];
         nome_completo              = results[empresa]['longName'];
-        print(nome_completo)
+        #print(nome_completo)
+
+        with conexao.cursor() as cursor:
+            sql = 'INSERT INTO cotacao2 (equipe_id,preco, acao_id ) values ("4","{}","{}");'.format(preco_atual, acoes[i])
+            cursor.execute(sql)
+            print(sql)
+            conexao.commit()
+
+
+
+schedule.every(10).seconds.do(ler_acao)
+
+while 1:
+    schedule.run_pending()
+    time.sleep(1)
+
+
