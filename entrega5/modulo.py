@@ -8,40 +8,53 @@ import pymysql
 import schedule
 import time
 
-def getFontes(buscar):
+modo = "dev"
+
+def getUrlGoogle(buscar):
     urls = []
     for i in (search(buscar,tld="com.br",num=15,stop=3,pause=2)):
         urls.append(i)
     print(urls)
     return urls
 
-def getHtml(urls):
+def getHtml(urls,gravarBD,id):
     noticias = []
     for i in urls:
         g=Goose()
         noticia=g.extract(url=i)
         hoje = datetime.datetime.now()
-        if(noticia.publish_date != None):
+        '''if(noticia.publish_date != None):
             artigoData = noticia.publish_date.split('T')
             dataHoje = hoje.strftime("%Y-%m-%d")
             print(artigoData[0])
             print(dataHoje)
             if str(dataHoje) != str(artigoData[0]):
                print("\nNoticia Antiga : "+i +" Data "+ artigoData[0])
+        '''
+        if (noticia.cleaned_text == None):
+            continue
+
         noticias.append(noticia.cleaned_text)
+        print(i)
+        print(noticia.cleaned_text)
+
+        if gravarBD is not None:
+            val = [5, noticia.cleaned_text, i,id]
+            query = executaDB("INSERT INTO noticias(equipe_id,noticia_descricao,url_noticia,acao_id) values(%s,%s,%s,%s)", val)
+
     return noticias
 
-def gravaArquivo(arquivo,noticia):
+def setArquivo(arquivo,noticia):
     for i in noticia:
         hoje = datetime.datetime.now();
-        data = hoje.strftime("%d/%m/%Y")
         hoje = hoje.strftime("%d/%m/%Y %H:%M:%S")
         f = open(arquivo, 'a')
         f.write(str(hoje)+"\n" + i+"\n")
         f.close()
 
-def fnYFinJSON(stock):
-      urlData = "https://query2.finance.yahoo.com/v7/finance/quote?symbols="+stock
+#def fnYFinJSON(stock):
+def getAcaoJson(acao):
+      urlData = "https://query2.finance.yahoo.com/v7/finance/quote?symbols="+acao
       print(urlData)
       webUrl = urllib.request.urlopen(urlData)
       if (webUrl.getcode() == 200):
@@ -51,7 +64,7 @@ def fnYFinJSON(stock):
       yFinJSON = json.loads(data)
       return yFinJSON["quoteResponse"]["result"][0]
 
-def getDados(id, tickers):
+def getDados(id, acao, gravaBD):
     fields = {'shortName': 'Company', 'bookValue': 'Book Value', 'currency': 'Curr',
               'fiftyTwoWeekLow': '52W L', 'fiftyTwoWeekHigh': '52W H',
               'regularMarketPrice': 'Price',
@@ -65,98 +78,116 @@ def getDados(id, tickers):
               'fiftyTwoWeekHigh': 'fiftyTwoWeekHigh', 'regularMarketChange': 'regularMarketChange',
               'regularMarketChangePercent': 'regularMarketChangePercent', 'longName': 'longName'}
     results = {}
-    ticker = tickers
+    ticker = acao
     #for ticker in ticker:
-    tickerData = fnYFinJSON(ticker)  # le o site
+    tickerData = getAcaoJson(ticker)  # le o site
     singleResult = {}
     for key in fields.keys():
         if key in tickerData:
             singleResult[fields[key]] = tickerData[key]
         else:
             singleResult[fields[key]] = "N/A"
-    results[tickers] = singleResult
+    results[ticker] = singleResult
 
     print(results[ticker]);
     precoAtual = results[ticker]['regularMarketPrice']
+    #hoje = datetime.datetime.now()
+    #dataHoje = hoje.strftime("%Y-%m-%d %H:%M:%S")
 
+    if gravaBD is not None:
+        val = [5, precoAtual, id]
+        query = executaDB("INSERT INTO cotacao(equipe_id,preco,acao_id) values(%s,%s,%s)",val)
 
-    hoje = datetime.datetime.now()
-    dataHoje = hoje.strftime("%Y-%m-%d %H:%M:%S")
-    query = altera("INSERT INTO cotacao(equipe_id,preco,data_importacao,acao_id) values(%s,%s,%s,%s)",5, precoAtual,dataHoje, id)
+    # print(results[ticker]['Company']);
+    # print(results[ticker]['regularMarketPrice']);
 
-        # print(results[ticker]['Company']);
-        # print(results[ticker]['regularMarketPrice']);
-
-        #precoAtual = results[ticker]['regularMarketPrice']
-        #precoAbertura = results[ticker]['regularMarketOpen']
-        #precoBaixa = results[ticker]['regularMarketDayLow']
-        #fechamento = results[ticker]['close']
-        #precoAlta = results[ticker]['regularMarketDayHigh']
-        #marketState = results[ticker]['marketState']
-        #media3Meses = results[ticker]['averageDailyVolume3Month']
-        #media50Dias = results[ticker]['fiftyDayAverage']
-        #baixa52Semanas = results[ticker]['fiftyTwoWeekLow']
-        #alta52Semanas = results[ticker]['fiftyTwoWeekHigh']
-        #media200Dias = results[ticker]['twoHundredDayAverage']
-        #MudancaMercadoRegular = results[ticker]['regularMarketChange']
-        #PercentualRegularMudancaMercado = results[ticker]['regularMarketChangePercent']
-        #nomeCompleto = results[ticker]['longName'];
+    #precoAtual = results[ticker]['regularMarketPrice']
+    #precoAbertura = results[ticker]['regularMarketOpen']
+    #precoBaixa = results[ticker]['regularMarketDayLow']
+    #fechamento = results[ticker]['close']
+    #precoAlta = results[ticker]['regularMarketDayHigh']
+    #marketState = results[ticker]['marketState']
+    #media3Meses = results[ticker]['averageDailyVolume3Month']
+    #media50Dias = results[ticker]['fiftyDayAverage']
+    #baixa52Semanas = results[ticker]['fiftyTwoWeekLow']
+    #alta52Semanas = results[ticker]['fiftyTwoWeekHigh']
+    #media200Dias = results[ticker]['twoHundredDayAverage']
+    #MudancaMercadoRegular = results[ticker]['regularMarketChange']
+    #PercentualRegularMudancaMercado = results[ticker]['regularMarketChangePercent']
+    #nomeCompleto = results[ticker]['longName'];
 
 def getConnect():
-    modo = "prod"
+    global modo
     if modo == "prod":
         host = dado.hostDB
         user = dado.userDB
         passwd = dado.senhaDB
         db = dado.baseDB
-        print("if")
+        print("BD PROD")
     else:
         host = dado.hostDBdev
         user = dado.userDBdev
         passwd = dado.senhaDBdev
         db = dado.baseDBdev
-        print("else")
+        print("BD DEV")
     conexao = pymysql.connect(host=host, user=user, passwd=passwd, db=db)
     return conexao
 
-def Select(sql):
+def executaDB(sql,val):
+    if "select" in sql.lower():
+        print("eh select")
+        lista = []
+        conexao = getConnect().cursor()
+        conexao.execute(sql)
+        for linha in conexao.fetchall():
+            lista.append(linha)
+        conexao.close()
+        return lista
+    else:
+        print("nao eh select")
+        resultado = altera(sql,val)
+        return resultado
+
+def getDadosAcao(equipe,gravarDB):
+    query = executaDB(equipe,0)
+    print(query)
+    i = 0
+    while i < len(query):
+        acao = str(query[i][1])
+        id = str(query[i][0])
+        getDados(id,acao,gravarDB)
+        i += 1
+
+def loop(qtime,qfuncao):
+    schedule.every(.1).minutes.do(getDadosAcao)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+def select(sql):
     lista = []
     conexao = getConnect().cursor()
     conexao.execute(sql)
-    #return conexao.execute(sql) returna 3, You can't call fetchall() on the result of a cursor.execute(), in fact, according to MySQLdb documentation, cursor.execute() return the number of affected rows by the query executed. To retrieve data you have to access to cursor results directly:
     for linha in conexao.fetchall():
         lista.append(linha)
     conexao.close()
     return lista
 
-
-def altera(sql,nr,precoAtual,data, id):
+def altera(sql,val):
     conexao = getConnect()
     insert = conexao.cursor()
-    val = (nr, precoAtual,data, id)
-    resultado = insert.execute(sql,val)
+    if val is not None:
+        print("altera tem val")
+        resultado = insert.execute(sql,val)
+    else:
+        print("altera não tem val")
+        resultado = insert.execute(sql)
     conexao.commit()
     insert.close()
     conexao.close()
     return resultado
 
-def principal():
-    query = Select("SELECT id,nome FROM acao where id_equipe = '5'")
-    i = 0
-    while i < len(query):
-        acao = str(query[i][1])
-        id = str(query[i][0])
-        getDados(id,acao)
-        i += 1
-
-def rodando(qtime,qfuncao):
-    schedule.every(.1).minutes.do(principal)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-
-
-
+####################################################
 
 
 ##exemplos, sem uso, funções acima atendem o estado atual

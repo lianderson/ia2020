@@ -4,7 +4,10 @@ import urllib.request #pacote para trabalhar com mewb
 import json #pacote para manipular JSON
 import Aulas.ia2020.entrega5.modulo as mod
 
-mod.rodando("1","principal")
+gravarBD = "SIM"
+#gravarBD = None
+
+mod.getDadosAcao("SELECT id,nome FROM acao where id_equipe = '5'",gravarBD)
 
 
 
