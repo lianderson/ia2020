@@ -60,26 +60,27 @@ def rodarBusca():
         # retorna lista de urls
         listaUrls.append(mqe.retornaURL(acao_simbolo))
 
-    for i in (listaUrls):
+        for i in (listaUrls):
 
-        for k in (i):
-            
-            url_noticia = k
-            # retorna noticias de acordo com cada url
-            arrayNoticia = mqe.retornaInformacoesSite(url_noticia)
-            noticia = arrayNoticia[1]
+            for k in (i):
+                arrayNoticia = []
 
-            # ===============================================================================
-            # inserindo a noticia na tabela cotacao no banco
-            # ===============================================================================
-            cursor_banco = conexao.cursor()
-            sql = 'INSERT INTO noticias (equipe_id,noticia_descricao,url_noticia,acao_id) values (%s,"%s","%s",%s)' % (equipe_id, noticia, url_noticia, acao_id)
-            cursor_banco.execute(sql)
-            conexao.commit()
-            cursor_banco.close()        
+                url_noticia = k
+                # retorna noticias de acordo com cada url
+                arrayNoticia = mqe.retornaInformacoesSite(url_noticia)
+                noticia = arrayNoticia[1]
 
-            print(acao_simbolo + ': Registro inserido em: ' + str(datetime.now()))
+                # ===============================================================================
+                # inserindo a noticia na tabela cotacao no banco
+                # ===============================================================================
+                cursor_banco = conexao.cursor()
+                sql = 'INSERT INTO noticias (equipe_id,noticia_descricao,url_noticia,acao_id) values (%s,"%s","%s",%s)' % (equipe_id, noticia, url_noticia, acao_id)
+                cursor_banco.execute(sql)
+                conexao.commit()
+                cursor_banco.close()        
 
+                print(acao_simbolo + ': Registro inserido em: ' + str(datetime.now()))        
+        listaUrls = []        
     conexao.close()
 
 # ===============================================================================
