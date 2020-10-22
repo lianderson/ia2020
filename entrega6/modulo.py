@@ -103,6 +103,13 @@ def getDados(id, acao, gravaBD):
     precoAtual = results[ticker]['regularMarketPrice']
 
     if gravaBD is not None:
+        #val = [id]
+        #url_noticias = executaDB("SELECT url_noticia FROM noticias WHERE acao_id =%s", val)
+        #print(url_noticias)
+        #print(i)
+        #if valor != valor_banco:
+        #    print("Valor igual")
+        #    continue
         val = [5, precoAtual, id]
         query = executaDB("INSERT INTO cotacao(equipe_id,preco,acao_id) values(%s,%s,%s)",val)
 
@@ -153,6 +160,7 @@ def executaDB(sql,val):
                 conexao.execute(sql)
         except pymysql.DatabaseError as err:
             print("Erro fatal no banco:")
+            exit()
 
         for linha in conexao.fetchall():
             lista.append(linha)
