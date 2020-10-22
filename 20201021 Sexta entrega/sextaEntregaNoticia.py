@@ -78,15 +78,22 @@ def rodarBusca():
                     noticia = arrayNoticia[1]
 
                     if (len(noticia) > 0):
+
+                        # ===============================================================================
+                        # conexao com o banco
+                        # ===============================================================================
+                        conexao = pymysql.connect(
+                            host='viajuntos.com.br', user='admin_ia', password='admin_ia', db='admin_ia')
                         cursor_banco = conexao.cursor()
                         cont = 0
-                        sql = "SELECT COUNT(url_noticia) AS contagem FROM noticias WHERE equipe_id = 2 and url_noticia = '%s' % (url_noticia)
-                        print(sql)
-                        cursor_banco.execute(sql)
+                        sql2 = "SELECT * FROM noticias WHERE url_noticia = '%s'" % (
+                            url_noticia)
+                        print(sql2)
+                        cursor_banco.execute(sql2)
                         for duplicados in (cursor_banco.fetchall()):
                             # arrayAcoes.append(linhas)
                             print(str(duplicados))
-                            cont = cont + 1                                                    
+                            cont = cont + 1
                         cursor_banco.close()
 
                         if (cont == 0):
@@ -94,7 +101,8 @@ def rodarBusca():
                             # inserindo a noticia na tabela cotacao no banco
                             # ===============================================================================
                             cursor_banco = conexao.cursor()
-                            sql = 'INSERT INTO noticias (equipe_id,noticia_descricao,url_noticia,acao_id) values (%s,"%s","%s",%s)' % (equipe_id, noticia, url_noticia, acao_id)
+                            sql = 'INSERT INTO noticias (equipe_id,noticia_descricao,url_noticia,acao_id) values (%s,"%s","%s",%s)' % (
+                                equipe_id, noticia, url_noticia, acao_id)
                             print(sql)
                             cursor_banco.execute(sql)
                             conexao.commit()
@@ -114,7 +122,8 @@ def rodarBusca():
     except:
         print("Erro sem tratamento:", sys.exc_info()[0])
     finally:
-        conexao.close()
+        print("Finally")
+        # conexao.close()
 
 
 # ===============================================================================
