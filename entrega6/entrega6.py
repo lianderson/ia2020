@@ -7,4 +7,7 @@ import Aulas.ia2020.entrega6.modulo as mod
 gravarBD = "SIM"
 #gravarBD = None
 
-mod.getDadosAcao("SELECT id,nome FROM acao where id_equipe = '5'",gravarBD)
+try:
+    mod.getDadosAcao("SELECT id,nome FROM acao where id_equipe = '5'",gravarBD)
+except Exception as e:
+    print(e)
