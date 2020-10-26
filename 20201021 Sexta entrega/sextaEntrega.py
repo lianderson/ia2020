@@ -87,14 +87,14 @@ def rodarBusca():
 # ===============================================================================
 # configuracao para rodar a busca
 # ===============================================================================
-schedule.every(.1).minutes.do(rodarBusca)
+schedule.every(30).minutes.do(rodarBusca)
 # schedule.every().hour.do(rodarBusca) #descomentar para pegar os valores de hora e hora
 
 now = datetime.now()
 hora = str(now.hour) + str(now.minute)
 
 while (1):
-    if (hora > '1000') and (hora < '2300'):
+    if (hora > '1000') and (hora < '1900'):
         schedule.run_pending()
         time.sleep(1)
         now = datetime.now()

@@ -119,21 +119,17 @@ def retornaInformacoesSite(site_url):
     return(arrayNoticia)
 
 
-def noticiaDuplicada(pCursor, noticia):
+def verificaNoticiaDuplicada(pCursor, url_noticia):
     cont = 0
-
-    #conexao2 = pymysql.connect(host='viajuntos.com.br', user='admin_ia', password='admin_ia', db='admin_ia')    
-    #pCursor = conexao2.cursor()
     
-    sql = "SELECT noticia_descricao FROM noticias WHERE equipe_id = 2 and noticia_descricao = '%s'" % (noticia)
-    print(sql)
-    pCursor.execute(sql)
-
-    for linhas in (pCursor.fetchall()):
-        # arrayAcoes.append(linhas)
-        print(str(linhas))
+    sql2 = "SELECT * FROM noticias WHERE url_noticia = '%s'" % (url_noticia)
+    pCursor.execute(sql2)
+    for duplicados in (pCursor.fetchall()):
         cont = cont + 1
-
-    pCursor.close()
-
+    
     return cont
+
+def gravaLog(caminho, mensagem):
+    f = open(caminho, 'a')
+    f.write(mensagem)
+    f.close()

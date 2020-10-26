@@ -1,0 +1,5 @@
+BBSE3.SA: Registro inserido em: 2020-10-26 20:33:40.393384
+UNIP3.SA: Registro inserido em: 2020-10-26 20:33:46.146187
+Executado em: 2020-10-26 20:33:46.146187
+Executado em: 2020-10-26 20:34:55.011004
+Executado em: 2020-10-26 20:36:04.027385
