@@ -8,7 +8,7 @@ import pymysql
 import schedule
 import time
 
-modo = "dev"
+modo = "prod"
 
 def getUrlGoogle(buscar):
     urls = []
@@ -32,18 +32,13 @@ def getHtml(urls,gravarBD,id):
             print("vazio")
             continue
 
-        val = [id]
-        url_noticias = executaDB("SELECT url_noticia FROM noticias WHERE acao_id =%s", val)
-        #print(url_noticias)
-        #print(i)
-        if i in str(url_noticias):
+        val = [id,noticia.cleaned_text ]
+        url_noticias = executaDB("SELECT noticia_descricao FROM noticias WHERE acao_id =%s AND noticia_descricao = %s", val)
+        if url_noticias:
             print("Ja ta no BD")
             continue
 
-
         noticias.append(noticia.cleaned_text)
-        #print(i)
-        #print(noticia.cleaned_text)
 
         if gravarBD is not None:
             val = [5, noticia.cleaned_text, i,id]
@@ -103,15 +98,12 @@ def getDados(id, acao, gravaBD):
     precoAtual = results[ticker]['regularMarketPrice']
 
     if gravaBD is not None:
-        #val = [id]
-        #url_noticias = executaDB("SELECT url_noticia FROM noticias WHERE acao_id =%s", val)
-        #print(url_noticias)
-        #print(i)
-        #if valor != valor_banco:
-        #    print("Valor igual")
-        #    continue
-        val = [5, precoAtual, id]
-        query = executaDB("INSERT INTO cotacao(equipe_id,preco,acao_id) values(%s,%s,%s)",val)
+        val = [id]
+        valor_banco = executaDB("SELECT preco FROM cotacao WHERE acao_id =%s ORDER BY cotacao.data_importacao DESC limit 1", val)
+        if precoAtual not in valor_banco[0]:
+           print("valor diferente")
+           val = [5, precoAtual, id]
+           query = executaDB("INSERT INTO cotacao(equipe_id,preco,acao_id) values(%s,%s,%s)",val)
 
     # print(results[ticker]['Company']);
     # print(results[ticker]['regularMarketPrice']);
@@ -138,19 +130,18 @@ def getConnect():
         user = dado.userDB
         passwd = dado.senhaDB
         db = dado.baseDB
-        print("BD PROD")
+        #print("BD PROD")
     else:
         host = dado.hostDBdev
         user = dado.userDBdev
         passwd = dado.senhaDBdev
         db = dado.baseDBdev
-        print("BD DEV")
+        #print("BD DEV")
     conexao = pymysql.connect(host=host, user=user, passwd=passwd, db=db)
     return conexao
 
 def executaDB(sql,val):
     if "select" in sql.lower():
-        print("eh select")
         lista = []
         try :
             conexao = getConnect().cursor()
@@ -167,12 +158,11 @@ def executaDB(sql,val):
         conexao.close()
         return lista
     else:
-        print("nao eh select")
         resultado = altera(sql,val)
         return resultado
 
 def getDadosAcao(equipe,gravarDB):
-    query = executaDB(equipe,0)
+    query = executaDB(equipe,None)
     print(query)
     i = 0
     while i < len(query):
@@ -204,10 +194,10 @@ def altera(sql,val):
         print("Erro fatal no banco:")
 
     if val is not None:
-        print("altera tem val")
+        #print("altera tem val")
         resultado = insert.execute(sql,val)
     else:
-        print("altera não tem val")
+        #print("altera não tem val")
         resultado = insert.execute(sql)
     conexao.commit()
     insert.close()

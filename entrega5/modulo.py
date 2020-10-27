@@ -8,7 +8,7 @@ import pymysql
 import schedule
 import time
 
-modo = "dev"
+modo = "prod"
 
 def getUrlGoogle(buscar):
     urls = []
