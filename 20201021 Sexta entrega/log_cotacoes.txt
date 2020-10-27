@@ -1,0 +1,5 @@
+Executado em: 2020-10-27 14:13:43.219147
+BBSE3.SA: Registro inserido em: 2020-10-27 14:15:53.171498
+CCRO3.SA: Registro inserido em: 2020-10-27 14:15:53.449862
+UNIP3.SA: Registro inserido em: 2020-10-27 14:15:53.734384
+Executado em: 2020-10-27 14:15:53.735382

@@ -18,6 +18,8 @@ import sys
 # ===============================================================================
 # criacao de variaveis
 # ===============================================================================
+caminho = 'D:\\Projetos\\python\\InteligenciaArtificial\\#github\\ia2020\\20201021 Sexta entrega\\log_cotacoes.txt'
+
 arrayInformacoes = []
 arrayAcoes = []
 equipe_id = 0
@@ -70,8 +72,10 @@ def rodarBusca():
             cursor_banco.close()
 
             print(acao_simbolo + ': Registro inserido em: ' + str(datetime.now()))
+            mqe.gravaLog(caminho, acao_simbolo + ': Registro inserido em: ' + str(datetime.now()) + '\n')
 
-        conexao.close()
+        if (conexao.open):
+            conexao.close()
     except ValueError:
         print("Não foi possível converter")
     except BufferError:
@@ -81,13 +85,15 @@ def rodarBusca():
     except:
         print("Erro sem tratamento:", sys.exc_info()[0])
     finally:
-        conexao.close()
+        if (conexao.open):
+            conexao.close()
+        mqe.gravaLog(caminho, 'Executado em: ' + str(datetime.now()) + '\n')
 
 
 # ===============================================================================
 # configuracao para rodar a busca
 # ===============================================================================
-schedule.every(30).minutes.do(rodarBusca)
+schedule.every(1).minutes.do(rodarBusca)
 # schedule.every().hour.do(rodarBusca) #descomentar para pegar os valores de hora e hora
 
 now = datetime.now()

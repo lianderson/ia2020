@@ -3,3 +3,6 @@ UNIP3.SA: Registro inserido em: 2020-10-26 20:33:46.146187
 Executado em: 2020-10-26 20:33:46.146187
 Executado em: 2020-10-26 20:34:55.011004
 Executado em: 2020-10-26 20:36:04.027385
+Executado em: 2020-10-27 13:39:58.656475
+Executado em: 2020-10-27 13:41:06.763309
+Executado em: 2020-10-27 13:42:15.059076
