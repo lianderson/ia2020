@@ -76,7 +76,16 @@ def rodarBusca():
 
                 listaTeste = []
                 listaTeste = [id_noticia, palavra, quantidade]
-                arrayPalavrasNoticias.append(listaTeste)                
+                arrayPalavrasNoticias.append(listaTeste)        
+
+                # ===============================================================================
+                # inserindo as palavras na tabela equipe2_palavra no banco
+                # ===============================================================================
+                cursor_banco = conexao.cursor()
+                sql = 'INSERT INTO equipe2_palavra(palavra,quantidade,noticia_id)  values("%s",%s,%s) ' % (palavra, quantidade, id_noticia)
+                cursor_banco.execute(sql)
+                conexao.commit()
+                cursor_banco.close()
 
             print(arrayPalavrasNoticias)
             print('\n'+'\n'+'\n')
