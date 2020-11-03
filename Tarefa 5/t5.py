@@ -79,5 +79,3 @@ def atualiza_cotacoes_equipe3():
 #schedule.every(.1).minutes.do(rodar)
 
 
-atualiza_cotacoes_equipe3()
-print("feito")
