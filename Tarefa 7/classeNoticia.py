@@ -61,7 +61,7 @@ def busca_cotacoes(equipe):
 
 
 def consulta(termo, qnt):
-    return search(termo, num_results=qnt, lang="br")
+    return search(termo, num_results=qnt, lang="pt-br")
 
 
 class Noticia:
@@ -86,32 +86,35 @@ def get_noticia_url(url, id_acao):
 
 
 def busca_noticias(acao, id_acao):
-    tmpbusca = consulta(str(acao), 0)
+    tmpbusca = consulta(str(acao), 2)
     if(len(tmpbusca) > 0):
-        busca = tmpbusca[0]
-        resultado = get_noticia_url(busca, id_acao)
-        print(resultado)
+        for item in tmpbusca:
+            #busca = tmpbusca[0]
+            resultado = get_noticia_url(item, id_acao)
 
-
-        if(len(resultado.texto) > 0):
-            conexao = pymysql.connect(host='viajuntos.com.br', user='admin_ia', passwd='admin_ia', db='admin_ia')
-            cursor_banco = conexao.cursor()
-            sql = "SELECT * FROM noticias WHERE url_noticia = '%s'" % (resultado.url)
-            cursor_banco.execute(sql)
-            conexao.close()
-            cont = 0
-            for rows in (cursor_banco.fetchall()):
-                cont = cont + 1
-            if(cont == 0):
-                #nao tem repetido, cadastrar
-                inserir_noticia(resultado)
+            if(len(resultado.texto) > 0):
+                conexao = pymysql.connect(host='viajuntos.com.br', user='admin_ia', passwd='admin_ia', db='admin_ia')
+                cursor_banco = conexao.cursor()
+                sql = "SELECT * FROM noticias WHERE url_noticia = '%s'" % (resultado.url)
+                cursor_banco.execute(sql)
+                conexao.close()
+                cont = 0
+                for rows in (cursor_banco.fetchall()):
+                    cont = cont + 1
+                if(cont == 0):
+                    #nao tem repetido, cadastrar
+                    inserir_noticia(resultado)
 
 def inserir_noticia(noticia):
-    """conexao = pymysql.connect(host='viajuntos.com.br', user='admin_ia', passwd='admin_ia',db='admin_ia')
+    data = time.strftime('%Y-%m-%d %H:%M:%S')
+    conexao = pymysql.connect(host='viajuntos.com.br', user='admin_ia', passwd='admin_ia',db='admin_ia')
     cursor_banco = conexao.cursor()
-    cursor_banco.execute('insert into noticias(equipe_id,noticia_descricao,data_importacao,url_noticia,acao_id) values(%s, %s, %s, %s, %s)', (3, (noticia.titulo + " - " + noticia.texto), noticia.data, noticia.url, noticia.acao))
+    cursor_banco.execute('insert into noticias(equipe_id,noticia_descricao,data_importacao,url_noticia,acao_id) values(%s, %s, %s, %s, %s)', (3, (noticia.titulo + " - " + noticia.texto), str(data), noticia.url, noticia.acao))
     conexao.commit()
-    conexao.close()"""
+    conexao.close()
+    print(noticia.url + " - " + str(data) + '\n')
+    print(noticia.texto + '\n')
+    print("---------------------------------")
 
 def busca_noticias_equipe3():
     cotacoes = busca_cotacoes(3)  # busca cotacoes da equipe com id 3
