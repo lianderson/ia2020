@@ -7,6 +7,7 @@ import json #pacote para manipular JSON
 import pymysql
 import schedule
 import time
+from  collections  import Counter
 
 modo = "prod"
 
@@ -204,8 +205,22 @@ def altera(sql,val):
     conexao.close()
     return resultado
 
+def populaPalavras():
+    noticias = executaDB("SELECT id,noticia_descricao FROM noticias where equipe_id = '5'", None)
 
-
+    for x in noticias:
+        palavras = Counter(x[1].split())
+        for y in palavras.items():
+            val = [x[0], y[0]]
+            noticias = executaDB("SELECT id FROM equipe5_palavra where noticia_id = '%s' AND palavra = %s limit 1", val)
+            if noticias:
+                print("achou palavra "+y[0])
+                continue
+            else:
+                print("Nao achou palavra "+y[0])
+            print("insert")
+            val = [y[0], y[1], x[0]]
+            query = executaDB("INSERT INTO equipe5_palavra (palavra,quantidade,noticia_id) values(%s,%s,%s)", val)
 
 ####################################################
 
