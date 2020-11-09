@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib . pyplot as plt
 import calendar
 
-modo = "dev"
+modo = "prod"
 
 def set_modo(modo2):
     global modo
@@ -217,11 +217,17 @@ def altera(sql,val):
     conexao.close()
     return resultado
 
+def removeCaracteres(palavra):
+    caracteres = ["\\","*","_","{","}","[","]","(",")",">","<","#","+","-",".",",","!","?","$","%","\"",";","'",":"," a "," b "," c "," d "," e "," f "," g "," h "," i "," j "," k "," l "," m "," n "," o "," p "," q "," r "," s "," t "," u "," v "," x "," w "," y "," z "," 0 "," 1 "," 2 "," 3 "," 4 "," 5 "," 6 "," 7 "," 8 "," 9 "," in ", " para ", " is ", " to ", " the ", " of "]
+    for caracter in caracteres:
+        palavra = palavra.replace(caracter, " ")
+    return palavra
+
 def populaPalavras():
     noticias = executaDB("SELECT id,noticia_descricao FROM noticias where equipe_id = '5'", None)
-
     for x in noticias:
-        palavras = Counter(x[1].split())
+        texto = removeCaracteres(x[1].lower())
+        palavras = Counter(texto.split())
         for y in palavras.items():
             val = [x[0], y[0]]
             noticias = executaDB("SELECT id FROM equipe5_palavra where noticia_id = '%s' AND palavra = %s limit 1", val)
@@ -250,8 +256,10 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
     print(mes_inicio)
     '''
 
-    split_inicio = inicio.split("-")
-    split_fim = fim.split("-")
+    #split_inicio = inicio.split("-")
+    #split_fim = fim.split("-")
+    split_inicio = inicio.split("/")
+    split_fim = fim.split("/")
     inicio = split_inicio[2]+"-"+split_inicio[1]+"-"+split_inicio[0]
     fim = split_fim[2] + "-" + split_fim[1] + "-" + split_fim[0]
 
@@ -339,21 +347,6 @@ def bug():
     time.sleep(1.5)
 
 ####################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
