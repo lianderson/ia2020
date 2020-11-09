@@ -302,6 +302,10 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
         plt.ylabel("Peso")
         plt.show()
 
+def data():
+    hoje = datetime.datetime.now();
+    hoje = hoje.strftime("%d/%m/%Y %H:%M:%S")
+    return hoje
 
 def bug():
     print("Modo destruir a humanidade habilitado !!! ")

@@ -38,19 +38,18 @@ def contabiliza_palavras():
 
 def gera_graficos():
 
-    '''
     tipo_grafico = input("Qual gráfico gostaria de visualizar?\n1) Bar \n2) Linha? ")
     acao = input("Qual acao deseja visualizar? \n1) ITUB3.SA \n2) PNVL4.SA \n3)ABEV3.SA \n4) Outra digite acao. Padrão ITUB3.SA ")
     inicio = input("Data inicial da visualização. Padrão 01-02-2020 ")
     fim = input("Data final da visualização. Padrão 02-02-2020 ")
     calculo = input("Que dados gostaria de visualizar? 1) Media diaria\n2) Maior valor diária \n3) Menor valor diário\n4) Valor de Abertura \n5) Valor de Fechamento ")
-    '''
+    ''' Para debug!
     acao = "ITUB3.SA"
     inicio = '20-09-2020'
     fim = '30-09-2020'
     calculo = 1
     tipo_grafico = 1
-
+    '''
     mod.gerador_graficos(tipo_grafico, acao, calculo, inicio, fim)
 
 def exec():
@@ -76,7 +75,9 @@ def exec():
 if len(sys.argv) > 1:
     mod.set_modo(sys.argv[1])
     #mod.get_modo()
+    print(mod.data())
     switch(1,True)
 else:
-    switch(4, modo=True)
-    # exec()
+    #Para debug
+    #switch(4, modo=True)
+    exec()
