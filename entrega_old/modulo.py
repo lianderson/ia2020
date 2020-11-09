@@ -1,4 +1,4 @@
-import Aulas.ia2020.dados as dado # Nao esta no git, pois tem dados sensiveis
+import dados as dado # Nao esta no git, pois tem dados sensiveis
 from googlesearch import search
 from goose3 import Goose
 import datetime #https://www.w3schools.com/python/python_datetime.aspentrega3entrega3
@@ -8,8 +8,10 @@ import pymysql
 import schedule
 import time
 from  collections  import Counter
+import numpy as np
+import matplotlib . pyplot as plt
 
-modo = "dev"
+modo = "prod"
 
 def getUrlGoogle(buscar):
     urls = []
@@ -222,7 +224,49 @@ def populaPalavras():
             val = [y[0], y[1], x[0]]
             query = executaDB("INSERT INTO equipe5_palavra (palavra,quantidade,noticia_id) values(%s,%s,%s)", val)
 
+def busca_noticias(acoes,fontes,gravarDB=True):
+
+    for i in acoes:
+        if fontes is None:
+            fontes = getUrlGoogle(i[1])
+            noticia = getHtml(fontes, gravarDB, i[0])
+        else:
+            noticia = getHtml(fontes, gravarDB, i[0])
+
+def gerador_graficos(tipo_grafico,acao,inicio,fim):
+    val = [acao,inicio,fim]
+    valor = executaDB("SELECT preco,data_importacao FROM cotacao WHERE acao_id = '1' order by data_importacao",None)
+    datas = list()
+    valores = list()
+    for x in valor:
+        #data = x[1].replace('18:00:01','')
+        datas.append(x[1])
+        valores.append(x[0])
+
+    fig, ax = plt.subplots()
+    #ax.bar(datas, valores, label=("$ " + str(valores)))
+    ax.bar(datas, valores)
+    plt.xlabel("Data")
+    plt.ylabel("Valor")
+    plt.show()
+
 ####################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ##exemplos, sem uso, funções acima atendem o estado atual
@@ -261,3 +305,12 @@ def delete():
     conexao.commit()
     cursor_banco.close()
     conexao.close()
+
+
+
+
+
+
+
+
+

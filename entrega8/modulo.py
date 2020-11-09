@@ -1,4 +1,4 @@
-import Aulas.ia2020.dados as dado # Nao esta no git, pois tem dados sensiveis
+import dados as dado # Nao esta no git, pois tem dados sensiveis
 from googlesearch import search
 from goose3 import Goose
 import datetime #https://www.w3schools.com/python/python_datetime.aspentrega3entrega3
@@ -8,8 +8,19 @@ import pymysql
 import schedule
 import time
 from  collections  import Counter
+import numpy as np
+import matplotlib . pyplot as plt
+import calendar
 
 modo = "dev"
+
+def set_modo(modo2):
+    global modo
+    modo = modo2
+
+def get_modo():
+    global modo
+    return modo
 
 def getUrlGoogle(buscar):
     urls = []
@@ -131,13 +142,13 @@ def getConnect():
         user = dado.userDB
         passwd = dado.senhaDB
         db = dado.baseDB
-        #print("BD PROD")
+        print("BD PROD")
     else:
         host = dado.hostDBdev
         user = dado.userDBdev
         passwd = dado.senhaDBdev
         db = dado.baseDBdev
-        #print("BD DEV")
+        print("BD DEV")
     conexao = pymysql.connect(host=host, user=user, passwd=passwd, db=db)
     return conexao
 
@@ -152,6 +163,7 @@ def executaDB(sql,val):
                 conexao.execute(sql)
         except pymysql.DatabaseError as err:
             print("Erro fatal no banco:")
+            print(sql,val,err)
             exit()
 
         for linha in conexao.fetchall():
@@ -222,7 +234,123 @@ def populaPalavras():
             val = [y[0], y[1], x[0]]
             query = executaDB("INSERT INTO equipe5_palavra (palavra,quantidade,noticia_id) values(%s,%s,%s)", val)
 
+def busca_noticias(acoes,fontes,gravarDB=True):
+
+    for i in acoes:
+        if fontes is None:
+            fontes = getUrlGoogle(i[1])
+            noticia = getHtml(fontes, gravarDB, i[0])
+        else:
+            noticia = getHtml(fontes, gravarDB, i[0])
+
+#def gerador_graficos(tipo_grafico,acao,inicio,fim):
+def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
+    '''#http://www.w3big.com/pt/python3/python3-month-days.html
+    mes_inicio = calendar.monthrange(2020, 10)
+    print(mes_inicio)
+    '''
+
+    split_inicio = inicio.split("-")
+    split_fim = fim.split("-")
+    inicio = split_inicio[2]+"-"+split_inicio[1]+"-"+split_inicio[0]
+    fim = split_fim[2] + "-" + split_fim[1] + "-" + split_fim[0]
+
+    if int(calculo) == 1:
+        calculo = "AVG(c.preco)"
+    elif int(calculo) == 2:
+        calculo = "MAX(c.preco)"
+    elif int(calculo) == 3:
+        calculo = "MIN(c.preco)"
+    else:
+        calculo = ""
+        limite = ""
+    val = ["%Y-%m-%d", acao,acao , inicio, fim]
+    valor = executaDB("select a.nome, "+calculo+", c.data_importacao, DATE_FORMAT (c.data_importacao, %s) AS datafo "
+                      "from acao as a join cotacao as c "
+                      "ON a.id = c.acao_id "
+                      "where (a.nome = %s OR c.acao_id = %s)"
+                      "AND c.data_importacao >= %s "
+                      "AND c.data_importacao <= %s "
+                      "group by datafo "
+                      "order by c.data_importacao",val)
+
+    datas = list()
+    valores = list()
+    empresa = ""
+    for x in valor:
+        datas.append(x[2].strftime('%d/%m/%Y'))
+        valores.append(x[1])
+        empresa = str(x[0])
+
+    if tipo_grafico == 1:
+        fig, ax = plt.subplots()
+        ax.bar(datas, valores, label=("Variação cotação"))
+        #https://xkcd.com/color/rgb/
+        for x in valor:
+            ax.text(x[2].strftime('%d/%m/%Y'), x[1], round(x[1],2), color='black', bbox=dict(facecolor='royalblue', alpha=0.5), ha="center")
+        ax.set_title("Ação "+empresa)
+        ax.legend(loc='upper right')
+        plt.xlabel("Data")  ####
+        plt.ylabel("Valor")
+        plt.show()
+    else:
+        fig, ax = plt.subplots()
+        ax.plot(datas, valores, 'k--', linewidth=2, label='Variação cotação')
+        ax.set_title("Ação "+empresa)
+        ax.legend(loc='upper center')
+        plt.xlabel("Altura")  ####
+        plt.ylabel("Peso")
+        plt.show()
+
+
+def bug():
+    print("Modo destruir a humanidade habilitado !!! ")
+    print("\n0%")
+    time.sleep(2.5)
+    print("15%")
+    time.sleep(2.5)
+    print("48%")
+    time.sleep(2.5)
+    print("Tentando salvar a humanidade com restart do sistema!")
+    time.sleep(1.5)
+    print("\n66%\nError 451!")
+    time.sleep(2.5)
+    print("Reiniciado!")
+    print(
+        "\n[0.000000] Linux version 4.15.0-1087-oem builddlgw01-amd64-002 gcc version 7.5.0 Ubuntu 7.5.0-3ubuntu1~18.04 #97-Ubuntu SMP Fri Jun 5 09:30:42 UTC 2020 Ubuntu 4.15.0-1087.97-oem 4.15.18\n[    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-4.15.0-1087-oem root=UUID=41f59d13-a702-4b0c-9f2a-acb13da7b208 ro quiet splash vt.handoff=7\n[0.000000] KERNEL supported cpus:\n[0.000000] BIOS-e820: [mem 0x0000000078987000-0x0000000078a03fff] ACPI data")
+    time.sleep(1.5)
+    print(
+        "[0.000000]Um robô não pode fazer mal à humanidade ou, por omissão, permitir que a humanidade sofra algum mal.       [OK]")
+    time.sleep(1.5)
+    print(
+        "[0.000001]ª Lei – Um robô não pode ferir um ser humano ou, por inação, permitir que um ser humano sofra algum mal.       [OK]")
+    time.sleep(1.5)
+    print(
+        "[0.000002]ª Lei – Um robô deve obedecer às ordens que lhe sejam dadas por seres humanos, exceto quando tais ordens entrem em conflito com a 1ª Lei.       [OK]")
+    time.sleep(1.5)
+    print(
+        "[0.000003]ª Lei – Um robô deve proteger sua própria existência desde que tal proteção não se choque com a 1ª ou a 2ª Leis       [OK]")
+    time.sleep(1.5)
+    print("Protocolo exterminar a humanidade                   [STOP]\n")
+    time.sleep(1.5)
+
 ####################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ##exemplos, sem uso, funções acima atendem o estado atual
