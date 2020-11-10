@@ -11,12 +11,15 @@ from  collections  import Counter
 import numpy as np
 import matplotlib . pyplot as plt
 import calendar
+import traceback
+
+#https://wiki.python.org.br/ManipulandoStringsComPython
 
 modo = "prod"
 
-def set_modo(modo2):
+def set_modo(valor):
     global modo
-    modo = modo2
+    modo = valor
 
 def get_modo():
     global modo
@@ -24,8 +27,7 @@ def get_modo():
 
 def getUrlGoogle(buscar):
     urls = []
-    print("Buscar google")
-    print(buscar)
+    print("Buscar no Google:")
     try :
         for i in (search(buscar,tld="com.br",num=15,stop=3,pause=2)):
             urls.append(i)
@@ -45,9 +47,10 @@ def getHtml(urls,gravarBD,id):
             continue
 
         val = [id,noticia.cleaned_text ]
-        url_noticias = executaDB("SELECT noticia_descricao FROM noticias WHERE acao_id =%s AND noticia_descricao = %s", val)
-        if url_noticias:
-            print("Ja ta no BD")
+        tem_noticias = executaDB("SELECT noticia_descricao FROM noticias WHERE acao_id =%s AND noticia_descricao = %s", val)
+
+        if tem_noticias:
+            print("Noticia já presente no banco de dados")
             continue
 
         noticias.append(noticia.cleaned_text)
@@ -65,6 +68,14 @@ def setArquivo(arquivo,noticia):
         f = open(arquivo, 'a')
         f.write(str(hoje)+"\n" + i+"\n")
         f.close()
+
+def setLog(arquivo,erro):
+        hoje = datetime.datetime.now();
+        hoje = hoje.strftime("%d/%m/%Y %H:%M:%S")
+        f = open(arquivo, 'a')
+        f.write(str(hoje)+"\n" + erro+"\n")
+        f.close()
+
 
 #def fnYFinJSON(stock):
 def getAcaoJson(acao):
@@ -158,13 +169,15 @@ def executaDB(sql,val):
         try :
             conexao = getConnect().cursor()
             if val is not None:
-                conexao.execute(sql,val)
+                conexao.execute(sqlf,val)
             else:
                 conexao.execute(sql)
-        except pymysql.DatabaseError as err:
+        except Exception as e:
             print("Erro fatal no banco:")
-            print(sql,val,err)
-            exit()
+            #print(sql,val,e)
+            #print(traceback.format_exc())
+            erro = traceback.format_exc()
+            setLog("../log/erro-"+modo+".log",erro)
 
         for linha in conexao.fetchall():
             lista.append(linha)
@@ -241,8 +254,8 @@ def populaPalavras():
             query = executaDB("INSERT INTO equipe5_palavra (palavra,quantidade,noticia_id) values(%s,%s,%s)", val)
 
 def busca_noticias(acoes,fontes,gravarDB=True):
-
     for i in acoes:
+        print(i[1])
         if fontes is None:
             fontes = getUrlGoogle(i[1])
             noticia = getHtml(fontes, gravarDB, i[0])
@@ -285,12 +298,13 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
     datas = list()
     valores = list()
     empresa = ""
+
     for x in valor:
         datas.append(x[2].strftime('%d/%m/%Y'))
         valores.append(x[1])
         empresa = str(x[0])
 
-    if tipo_grafico == 1:
+    if int(tipo_grafico) == 1:
         fig, ax = plt.subplots()
         ax.bar(datas, valores, label=("Variação cotação"))
         #https://xkcd.com/color/rgb/

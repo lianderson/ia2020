@@ -65,13 +65,14 @@ def exec():
                                             "\n0) Finalizar Programa\nDigite a Opção: "
             )
             '''Se for digitado qq coisa que não seja int, vai dar erro para exception'''
-            ehint = int(pergunta)
-            switch(ehint,modo=True)
+            eh_int = int(pergunta)
+            if eh_int != 0:
+                switch(int(pergunta), modo=True)
         except Exception as e:
             print("\n\nOpção Inválida, tente novamente!\n\n")
             print(e)
             pergunta = 999
-
+    print("Sistema finalizado!")
 
 if len(sys.argv) > 1:
     mod.set_modo(sys.argv[1])
@@ -81,5 +82,5 @@ if len(sys.argv) > 1:
 else:
     mod.set_modo("dev")
     #switch(4, modo=True)
-    switch(3, modo=True)
+    #switch(3, modo=True)
     exec()
