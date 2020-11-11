@@ -169,7 +169,7 @@ def executaDB(sql,val):
         try :
             conexao = getConnect().cursor()
             if val is not None:
-                conexao.execute(sqlf,val)
+                conexao.execute(sql,val)
             else:
                 conexao.execute(sql)
         except Exception as e:
