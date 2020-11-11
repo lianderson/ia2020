@@ -1,4 +1,5 @@
 sql/*
+log/*
 dados.py
 dump.sql
 __pycache__
