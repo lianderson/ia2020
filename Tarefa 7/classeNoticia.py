@@ -6,6 +6,7 @@ from datetime import datetime
 from decimal import Decimal
 from goose3 import Goose
 from googlesearch import search
+from  collections  import Counter
 
 
 def fnYFinJSON(symbol):
@@ -121,5 +122,24 @@ def busca_noticias_equipe3():
     for row in cotacoes:
         busca_noticias(str(row[1]), str(row[0]))
 
+def conta_palavra():
+    lista = []
+    conexao = pymysql.connect(host='viajuntos.com.br', user='admin_ia', passwd='admin_ia', db='admin_ia')
+    cursor_banco = conexao.cursor()
+    select_noticia = "SELECT id,noticia_descricao FROM noticias where equipe_id = '3'"
+    cursor_banco.execute(select_noticia)
+    for linha in cursor_banco.fetchall():
+        lista.append(linha)
 
-busca_noticias_equipe3()
+    for x in lista:
+        word = Counter(x[1].split())
+        for y in word.items():
+            qtd_palavras = [y[0], y[1], x[0]]
+            query = "INSERT INTO equipe3_palavra (palavra,quantidade,noticia_id) VALUES ('%s',%s,%s)", qtd_palavras
+            cursor_banco.execute(query)
+            cursor_banco.commit()
+            cursor_banco.close()
+
+conta_palavra()
+
+#busca_noticias_equipe3()
