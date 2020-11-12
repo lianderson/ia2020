@@ -40,7 +40,7 @@ for acao in acoes.fetchall():
     print("desvio padrao:" + str(df['valor'].std()))
     print("media:" + str(df['valor'].mean()))
 
-    cursor_banco.execute('insert into equipe3_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra) values(%s, %s, %s, %s, %s, %s, %s)', (str(3), str(acao[0]), str(df['valor'].sum()), str(df['valor'].count()), str(df['valor'].min()), str(df['valor'].max()), str(df['valor'].std())))
+    cursor_banco.execute('insert into equipe3_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra,media) values(%s, %s, %s, %s, %s, %s, %s, %s)', (str(3), str(acao[0]), str(df['valor'].sum()), str(df['valor'].count()), str(df['valor'].min()), str(df['valor'].max()), str(df['valor'].std()), str(df['valor'].mean())))
     conexao.commit()
     conexao.close()
 
