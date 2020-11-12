@@ -15,15 +15,16 @@ def busca_cotacoes(equipe):
     return cursor_banco
 
 acoes = busca_cotacoes(3)
-valores = list()
-datas = list()
+
 indexacao = 0
 for acao in acoes.fetchall():
+    valores = list()
+    datas = list()
     conexao = pymysql.connect(host='viajuntos.com.br',user='admin_ia', passwd='admin_ia', db='admin_ia')
     cursor_banco = conexao.cursor()
     sql = "SELECT * FROM cotacao WHERE acao_id = " + str(acao[0]) + " order by data_importacao"
     cursor_banco.execute(sql)
-    conexao.close()
+    #conexao.close()
     for row in cursor_banco:
         valores.append(row[2])
         data = row[3]
@@ -38,6 +39,10 @@ for acao in acoes.fetchall():
     print("maximo:" + str(df['valor'].max()))
     print("desvio padrao:" + str(df['valor'].std()))
     print("media:" + str(df['valor'].mean()))
+
+    cursor_banco.execute('insert into equipe3_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra) values(%s, %s, %s, %s, %s, %s, %s)', (str(3), str(acao[0]), str(df['valor'].sum()), str(df['valor'].count()), str(df['valor'].min()), str(df['valor'].max()), str(df['valor'].std())))
+    conexao.commit()
+    conexao.close()
 
 # rodando = 0
 # acao = -1
