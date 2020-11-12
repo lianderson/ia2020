@@ -12,7 +12,7 @@ def switch(opcao,modo=None):
     elif opcao == 4:
         gera_graficos()
     elif opcao == 5:
-        exec(modo)
+        panda()
     else:
         mod.bug()
         exec()
@@ -32,6 +32,11 @@ def buscar_noticias(modo):
     fonte = ["https://br.financas.yahoo.com/quote/ITUB3.SA/", "https://br.financas.yahoo.com/quote/PNVL4.SA/"]
     fonte = None
     mod.busca_noticias(acoes,fonte,gravarDB=True)
+
+def panda():
+    #mod.panda(5,1)
+    mod.panda(5,2)
+    mod.panda(5,3)
 
 def contabiliza_palavras():
     mod.populaPalavras()
@@ -81,6 +86,5 @@ if len(sys.argv) > 1:
     switch(1,True)
 else:
     mod.set_modo("prod")
-    #switch(4, modo=True)
-    #switch(3, modo=True)
-    exec()
+    switch(5, modo=True)
+    #exec()
