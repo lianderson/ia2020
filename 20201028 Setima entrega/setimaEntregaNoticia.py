@@ -61,6 +61,8 @@ def rodarBusca():
             arrayPalavrasNoticias = []
             noticia = a[2]
 
+            noticia = noticia.lower()
+
             chaves_unicas = set(noticia.split())
             frequencia = [(item, noticia.split().count(item))
                           for item in chaves_unicas]
