@@ -135,5 +135,15 @@ def retornaInfoMat(df):
     print(df['0'].std())  # desvio padrao
     print('Média:')
     print(df['0'].mean())  # media
-    print('Describe:')
-    #print(df.describe())
+    print('Describe:')    
+    print(df.describe())
+
+    soma = df['0'].sum()
+    quantidade = df['0'].count()
+    minimo = df['0'].min()
+    maximo = df['0'].max()
+    desvio_padrao = df['0'].std()
+    media = df['0'].mean()
+
+    return (soma,quantidade,minimo,maximo,desvio_padrao,media)
+    
