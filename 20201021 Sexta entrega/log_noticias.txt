@@ -10,3 +10,39 @@ Executado em: 2020-10-28 17:11:34.721621
 Executado em: 2020-10-28 17:41:43.813063
 Executado em: 2020-10-28 18:11:53.126577
 Executado em: 2020-10-28 18:42:03.795103
+Executado em: 2020-11-18 17:34:18.891050
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:27.687042
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:28.359542
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:31.647017
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:32.063196
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:33.052157
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:33.888988
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:35.807458
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:36.896598
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:38.867398
+BBSE3.SA: Registro inserido em: 2020-11-18 17:41:40.663706
+CCRO3.SA: Registro inserido em: 2020-11-18 17:41:48.355427
+CCRO3.SA: Registro inserido em: 2020-11-18 17:41:55.847758
+CCRO3.SA: Registro inserido em: 2020-11-18 17:41:57.537402
+CCRO3.SA: Registro inserido em: 2020-11-18 17:41:58.523543
+CCRO3.SA: Registro inserido em: 2020-11-18 17:41:59.979169
+CCRO3.SA: Registro inserido em: 2020-11-18 17:42:05.449286
+CCRO3.SA: Registro inserido em: 2020-11-18 17:42:06.348683
+CCRO3.SA: Registro inserido em: 2020-11-18 17:42:09.971746
+CCRO3.SA: Registro inserido em: 2020-11-18 17:42:11.595498
+Erro sem tratamento:2020-11-18 17:42:21.917975
+Executado em: 2020-11-18 17:42:21.918973
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:36.843134
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:38.986634
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:39.246205
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:40.150755
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:41.220806
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:45.678540
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:50.966434
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:54.290571
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:55.154872
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:57.045308
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:57.960176
+UNIP3.SA: Registro inserido em: 2020-11-18 17:49:58.758418
+IOError2020-11-18 17:49:58.915085
+Executado em: 2020-11-18 17:49:58.916996

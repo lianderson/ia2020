@@ -102,7 +102,7 @@ def retornaCamposFormatados(pEmpresa):
 
 
 def retornaURL(consulta):
-    lista = search(consulta, num_results=1, lang="pt-br")
+    lista = search(consulta, num_results=5, lang="pt-br")
     return lista
 
 # ===============================================================================

@@ -99,3 +99,7 @@ BBSE3.SA: Registro inserido em: 2020-11-11 17:35:45.869342
 CCRO3.SA: Registro inserido em: 2020-11-11 17:35:46.179093
 UNIP3.SA: Registro inserido em: 2020-11-11 17:35:46.534950
 Executado em: 2020-11-11 17:35:46.534950
+BBSE3.SA: Registro inserido em: 2020-11-18 17:33:50.052305
+CCRO3.SA: Registro inserido em: 2020-11-18 17:33:50.347791
+UNIP3.SA: Registro inserido em: 2020-11-18 17:33:50.664488
+Executado em: 2020-11-18 17:33:50.664488
