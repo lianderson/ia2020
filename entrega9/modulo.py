@@ -32,7 +32,7 @@ def getUrlGoogle(buscar):
     urls = []
     print("Buscar no Google:")
     try :
-        for i in (search(buscar,tld="com.br",num=15,stop=3,pause=2)):
+        for i in (search(buscar,tld="com.br",num=15,stop=5,pause=2)):
             urls.append(i)
     except ValueError:
         print("Não achou nada no Google")
@@ -41,6 +41,7 @@ def getUrlGoogle(buscar):
 def getHtml(urls,gravarBD,id):
     noticias = []
     for i in urls:
+        print(i)
         g=Goose()
         noticia=g.extract(url=i)
         hoje = datetime.datetime.now()
@@ -128,8 +129,9 @@ def getDados(id, acao, gravaBD):
         valor_banco = executaDB("SELECT preco FROM cotacao WHERE acao_id =%s ORDER BY cotacao.data_importacao DESC limit 1", val)
         if precoAtual not in valor_banco[0]:
            print("valor diferente")
-           val = [5, precoAtual, id]
-           query = executaDB("INSERT INTO cotacao(equipe_id,preco,acao_id) values(%s,%s,%s)",val)
+           marketState = results[ticker]['marketState']
+           val = [5, precoAtual, id, marketState]
+           query = executaDB("INSERT INTO cotacao(equipe_id,preco,acao_id,estado_mercado) values(%s,%s,%s,%s)",val)
 
     # print(results[ticker]['Company']);
     # print(results[ticker]['regularMarketPrice']);
@@ -259,12 +261,14 @@ def populaPalavras():
 
 def busca_noticias(acoes,fontes,gravarDB=True):
     for i in acoes:
+        print(i[0])
         print(i[1])
         if fontes is None:
-            fontes = getUrlGoogle(i[1])
-            noticia = getHtml(fontes, gravarDB, i[0])
+            fonte = getUrlGoogle(i[1])
+            print(fonte)
+            noticia = getHtml(fonte, gravarDB, i[0])
         else:
-            noticia = getHtml(fontes, gravarDB, i[0])
+            noticia = getHtml(fonte, gravarDB, i[0])
 
 #def gerador_graficos(tipo_grafico,acao,inicio,fim):
 def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
@@ -333,25 +337,28 @@ def data():
     hoje = hoje.strftime("%d/%m/%Y %H:%M:%S")
     return hoje
 
-def panda(equipe,acao):
-    val = [equipe,acao]
-    print(val)
-    acoes = executaDB("SELECT a.nome,c.preco,c.data_importacao from acao as a join cotacao as c ON a.id = c.acao_id where equipe_id= %s AND acao_id= %s", val)
-    df = pd.DataFrame(acoes)
-    print(df)
-    print(df[1].sum())
-    print(df[1].count())
-    print(df[1].min())
-    print(df[1].max())
-    print(df[1].std())  # desvio padrao
-    print(df[1].mean())  # desvio padrao
-    print(df.describe())
-    val = [equipe,acao, float(df[1].sum()), int(df[1].count()), float(df[1].min()), float(df[1].max()),float(df[1].std()), float(df[1].mean())]
+def panda(acoes):
+    for i in acoes:
+        acao = i[0]
+        equipe = i[2]
+        val = [equipe, acao]
+        print(val)
+        valores_acao = executaDB("SELECT a.nome,c.preco,c.data_importacao from acao as a join cotacao as c ON a.id = c.acao_id where equipe_id= %s AND acao_id= %s",val)
+        df = pd.DataFrame(valores_acao)
+        print(df)
+        print(df[1].sum())
+        print(df[1].count())
+        print(df[1].min())
+        print(df[1].max())
+        print(df[1].std())  # desvio padrao
+        print(df[1].mean())  # desvio padrao
+        print(df.describe())
+        val = [equipe, acao, float(df[1].sum()), int(df[1].count()), float(df[1].min()), float(df[1].max()),
+               float(df[1].std()), float(df[1].mean())]
 
-    print(val)
-    query = executaDB("INSERT INTO equipe5_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra,media) values(%s,%s,%s,%s,%s,%s,%s,%s)", val)
-
-
+        query = executaDB(
+            "INSERT INTO equipe5_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra,media) values(%s,%s,%s,%s,%s,%s,%s,%s)",
+            val)
 
 def bug():
     print("Modo destruir a humanidade habilitado !!! ")

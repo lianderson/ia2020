@@ -29,14 +29,12 @@ def acao(modo):
 def buscar_noticias(modo):
     acoes = mod.executaDB("SELECT id,nome FROM acao where id_equipe = '5'", None)
     gravarDB = modo
-    fonte = ["https://br.financas.yahoo.com/quote/ITUB3.SA/", "https://br.financas.yahoo.com/quote/PNVL4.SA/"]
     fonte = None
     mod.busca_noticias(acoes,fonte,gravarDB=True)
 
 def panda():
-    #mod.panda(5,1)
-    mod.panda(5,2)
-    mod.panda(5,3)
+    acoes = mod.executaDB("SELECT id,nome,id_equipe FROM acao where id_equipe = '5'", None)
+    mod.panda(acoes)
 
 def contabiliza_palavras():
     mod.populaPalavras()
@@ -86,5 +84,5 @@ if len(sys.argv) > 1:
     switch(1,True)
 else:
     mod.set_modo("prod")
-    switch(5, modo=True)
-    #exec()
+    #switch(5, modo=True)
+    exec()
