@@ -3,7 +3,8 @@ import matplotlib . pyplot as plt
 import pandas as pd
 import seaborn as sns
 import pymysql
-import time
+import time 
+#dd
 
 def busca_cotacoes(equipe):
     conexao = pymysql.connect(host='viajuntos.com.br',
