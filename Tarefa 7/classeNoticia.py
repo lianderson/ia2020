@@ -135,10 +135,9 @@ def conta_palavra():
         word = Counter(x[1].split())
         for y in word.items():
             qtd_palavras = [y[0], y[1], x[0]]
-            query = "INSERT INTO equipe3_palavra (palavra,quantidade,noticia_id) VALUES ('%s',%s,%s)", qtd_palavras
-            cursor_banco.execute(query)
-            cursor_banco.commit()
-            cursor_banco.close()
+            cursor_banco.execute("INSERT INTO equipe3_palavra (palavra,quantidade,noticia_id) VALUES (%s,%s,%s)", (str(qtd_palavras[0]),str(qtd_palavras[1]),str(qtd_palavras[2])))
+            conexao.commit()
+    conexao.close()
 
 conta_palavra()
 
