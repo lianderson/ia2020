@@ -1,0 +1,9 @@
+
+venv/Lib/site-packages/numpy/.libs/libopenblas.QVLO2T66WEPI7JZ63PS3HMOHFEY472BC.gfortran-win_amd64.dll
+venv/Lib/site-packages/numpy/core/_multiarray_tests.cp38-win_amd64.pyd
+venv/Lib/site-packages/numpy/core/_multiarray_umath.cp38-win_amd64.pyd
+venv/Lib/site-packages/numpy/linalg/lapack_lite.cp38-win_amd64.pyd
+venv/Lib/site-packages/numpy/fft/_pocketfft_internal.cp38-win_amd64.pyd
+venv/Lib/site-packages/numpy/random/_bounded_integers.cp38-win_amd64.pyd
+venv/Lib/site-packages/numpy/random/_common.cp38-win_amd64.pyd
+*.pyd
