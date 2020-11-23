@@ -1,5 +1,4 @@
 import seaborn as sns
-#import moduloNonaEntrega as mqe
 import pymysql
 import numpy as np
 import pandas as pd
