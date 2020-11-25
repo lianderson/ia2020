@@ -111,3 +111,31 @@ BBSE3.SA: Registro inserido em: 2020-11-18 18:33:54.680215
 CCRO3.SA: Registro inserido em: 2020-11-18 18:33:55.090497
 UNIP3.SA: Registro inserido em: 2020-11-18 18:33:55.654724
 Executado em: 2020-11-18 18:33:55.654724
+BBSE3.SA: Registro inserido em: 2020-11-25 14:41:48.623470
+CCRO3.SA: Registro inserido em: 2020-11-25 14:41:49.037364
+UNIP3.SA: Registro inserido em: 2020-11-25 14:41:49.408681
+Executado em: 2020-11-25 14:41:49.408681
+BBSE3.SA: Registro inserido em: 2020-11-25 15:11:50.580165
+CCRO3.SA: Registro inserido em: 2020-11-25 15:11:50.892899
+UNIP3.SA: Registro inserido em: 2020-11-25 15:11:51.219648
+Executado em: 2020-11-25 15:11:51.220613
+BBSE3.SA: Registro inserido em: 2020-11-25 15:41:52.054801
+CCRO3.SA: Registro inserido em: 2020-11-25 15:41:52.409662
+UNIP3.SA: Registro inserido em: 2020-11-25 15:41:52.705645
+Executado em: 2020-11-25 15:41:52.706639
+BBSE3.SA: Registro inserido em: 2020-11-25 16:11:53.414314
+CCRO3.SA: Registro inserido em: 2020-11-25 16:11:53.766070
+UNIP3.SA: Registro inserido em: 2020-11-25 16:11:54.110459
+Executado em: 2020-11-25 16:11:54.110459
+BBSE3.SA: Registro inserido em: 2020-11-25 16:41:55.321409
+CCRO3.SA: Registro inserido em: 2020-11-25 16:41:55.639108
+UNIP3.SA: Registro inserido em: 2020-11-25 16:41:55.938307
+Executado em: 2020-11-25 16:41:55.939305
+BBSE3.SA: Registro inserido em: 2020-11-25 17:11:57.620684
+CCRO3.SA: Registro inserido em: 2020-11-25 17:11:57.934473
+UNIP3.SA: Registro inserido em: 2020-11-25 17:11:58.438817
+Executado em: 2020-11-25 17:11:58.438817
+BBSE3.SA: Registro inserido em: 2020-11-25 17:41:59.169138
+CCRO3.SA: Registro inserido em: 2020-11-25 17:41:59.474817
+UNIP3.SA: Registro inserido em: 2020-11-25 17:42:00.151056
+Executado em: 2020-11-25 17:42:00.152049
