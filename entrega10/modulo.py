@@ -349,34 +349,23 @@ def panda(acoes):
         df = pd.DataFrame(valores_acao)
 
         mediana = stats.gmean(df[1], axis=0)
-        moda =  statistics.mode(df[1])
+        moda = statistics.mode(df[1])
         aplitude= df[1].max() - df[1].min()
         variacao = df[1].var()
         media_harmonica = stats.hmean(df[1], axis=0)
         media_geometrica = statistics.geometric_mean(df[1])
-
-        '''
-        print(df)
-        print(df[1].sum())
-        print(df[1].count())
-        print(df[1].min())
-        print(df[1].max())
-        print(df[1].std())  # desvio padrao
-        print(df[1].mean())  # desvio padrao
-        print(df.describe())
-        print(mediana)
-        print(moda)
-        print(aplitude)
-        print(variacao)
-        print(media_harmonica)
-        print(media_geometrica)
-        '''
 
         val = [equipe, acao, float(df[1].sum()), int(df[1].count()), float(df[1].min()), float(df[1].max()),
                float(df[1].std()), float(df[1].mean()), float(mediana), float(moda), float(aplitude), float(variacao), float(media_harmonica), float(media_geometrica)]
 
         query = executaDB(
             "INSERT INTO equipe5_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra,media,mediana,moda,amplitude,variacao,media_harmonica,media_geometrica) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",val)
+
+def robo(acao,nome):
+    val = [acao]
+    analise = executaDB("SELECT * FROM admin_ia.equipe5_analise where acao_id=%s order by id desc limit 1", val)
+    for i in analise:
+        print(i[0])
 
 def bug():
     print("Modo destruir a humanidade habilitado !!! ")

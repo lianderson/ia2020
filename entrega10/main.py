@@ -13,11 +13,18 @@ def switch(opcao,modo=None):
         gera_graficos()
     elif opcao == 5:
         panda()
+    elif opcao == 6:
+        robo()
     else:
         mod.bug()
         exec()
     if len(sys.argv) < 1:
         exec()
+
+def robo():
+    acoes = mod.executaDB("SELECT id,nome FROM acao where id_equipe = '5'", None)
+    for i in acoes:
+        mod.robo(i[0],i[1])
 
 def acao(modo):
     gravarBD = modo
@@ -84,5 +91,5 @@ if len(sys.argv) > 1:
     switch(1,True)
 else:
     mod.set_modo("prod")
-    #switch(5, modo=True)
-    exec()
+    switch(6, modo=True)
+    #exec()
