@@ -9,7 +9,7 @@ conexao = pymysql.connect(host='viajuntos.com.br',
                           user='admin_ia', passwd='admin_ia', db='admin_ia')
 
 
-TOKEN = '1448255531:AAE9X8DYjtVYmI72f55yKK_nTuEb_kDZAbk'
+TOKEN = '1448255531:AAHlfO2K29_Uyuw78gVzwvlmL-bPg3gbRac'
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 
@@ -97,7 +97,7 @@ def echo_all(updates):
                 arrayAcoes = retornaAcoes()
 
                 for linhas in (arrayAcoes):
-                    text = linhas[1]
+                    text = "Ação: " + linhas[1] + " Valor: R$" + str(linhas[4])
                     send_message(text, chat)
                     text = ""
 
