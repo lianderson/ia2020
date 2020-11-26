@@ -54,7 +54,6 @@ def gera_graficos():
     fim = input("Data final da visualização. Padrão 02/02/2020 ")
     calculo = input("Que dados gostaria de visualizar? \n1) Media diaria\n2) Maior valor diária \n3) Menor valor diário\n4) Valor de Abertura \n5) Valor de Fechamento \n")
     #Para debug!
-
     '''
     acao = "ITUB34.SA"
     inicio = '20-09-2020'
@@ -92,5 +91,5 @@ if len(sys.argv) > 1:
     switch(1,True)
 else:
     mod.set_modo("prod")
-    switch(4, modo=True)
+    switch(6, modo=True)
     #exec()

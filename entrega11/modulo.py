@@ -187,7 +187,6 @@ def executaDB(sql,val):
             print(erro)
             setLog("../log/erro-"+modo+".log",erro)
 
-
         for linha in conexao.fetchall():
             lista.append(linha)
         conexao.close()
@@ -325,10 +324,7 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
         ax.legend(loc='upper right')
         plt.xlabel("Data")  ####
         plt.ylabel("Valor")
-        plt.savefig("teste.png")
-        plt.close(fig)
         plt.show()
-
     else:
         fig, ax = plt.subplots()
         ax.plot(datas, valores, 'k--', linewidth=2, label='Variação cotação')
@@ -336,10 +332,7 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
         ax.legend(loc='upper center')
         plt.xlabel("Altura")  ####
         plt.ylabel("Peso")
-        plt.savefig("teste.png")
         plt.show()
-        plt.close(fig)
-
 
 def data():
     hoje = datetime.datetime.now();
@@ -371,11 +364,10 @@ def panda(acoes):
 def robo(acao,nome):
     val = [acao]
     analise = executaDB("SELECT * FROM admin_ia.equipe5_analise where acao_id=%s order by id desc limit 1", val)
-    ultimo_valor = executaDB("SELECT preco FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1", val)
+    ultimo_valor = executaDB("SELECT preco FROM admin_ia.cotacao where acao_id = '1' order by id desc limit 1", None)
     for i in analise:
-        print(i[9])
-        valor = round(ultimo_valor[0][0],2)
-        print(valor)
+        print(i[0])
+        print(ultimo_valor[0])
 
 def bug():
     print("Modo destruir a humanidade habilitado !!! ")
