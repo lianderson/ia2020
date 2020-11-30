@@ -325,8 +325,6 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
         ax.legend(loc='upper right')
         plt.xlabel("Data")  ####
         plt.ylabel("Valor")
-        plt.savefig("teste.png")
-        plt.close(fig)
         plt.show()
 
     else:
@@ -336,9 +334,7 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
         ax.legend(loc='upper center')
         plt.xlabel("Altura")  ####
         plt.ylabel("Peso")
-        plt.savefig("teste.png")
         plt.show()
-        plt.close(fig)
 
 
 def data():

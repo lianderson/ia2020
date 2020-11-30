@@ -68,13 +68,11 @@ def echo_all(updates):
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
 
-            if(text.upper()=="VALOR"):
+            if(text.upper()=="COTACAO"):
                 text = "Qual ação gostaria de ver o último valor? Veja o comando:\n"
                 text += "COTACAO ITAU\n"
                 text += "COTACAO AMBEV\n"
                 text += "COTACAO PANVEL\n"
-
-                bot.send_photo(chat_id=chat, photo=open('/home/cassolli/Aulas/IA/Projeto/entrega10/teste.png', 'rb'))
                 send_message(text, chat)
                 text = ""
 
@@ -86,7 +84,77 @@ def echo_all(updates):
                 send_message(text, chat)
                 text = ""
 
-            if re.search('NOTICIAS', text, re.IGNORECASE):
+            if (text.upper() == "GRAFICO"):
+                text = "Qual ação você gostaria de ver o gráfico de valores dos últimos 15 dias?\n"
+                text += "Legenda:\n"
+                text += "MIN: Valor minimo.\n"
+                text += "AVG: Valor médio.\n"
+                text += "MAX: Valor máximo.\n"
+                text += "Comandos possiveis:\n"
+                text += "GRAFICO MIN DIAS ITAU\n"
+                text += "GRAFICO MIN DIAS AMBEV\n"
+                text += "GRAFICO MIN DIAS PANVEL\n"
+                text += "GRAFICO AVG DIAS ITAU\n"
+                text += "GRAFICO AVG DIAS AMBEV\n"
+                text += "GRAFICO AVG DIAS PANVEL\n"
+                text += "GRAFICO MAX DIAS ITAU\n"
+                text += "GRAFICO MAX DIAS AMBEV\n"
+                text += "GRAFICO MAX DIAS PANVEL\n"
+                send_message(text, chat)
+                text = ""
+
+
+            if re.search('GRAFICO ', text, re.IGNORECASE):
+                split_text = text.split(" ")
+                calculo = split_text[1]
+                calculos_possiveis = ['MIN','AVG','MAX']
+                if calculo not in calculos_possiveis:
+                    text = "Opção inválida!\n"
+                    text += "Comandos possiveis:\n"
+                    text += "GRAFICO MIN DIAS ITAU\n"
+                    text += "GRAFICO MIN DIAS AMBEV\n"
+                    text += "GRAFICO MIN DIAS PANVEL\n"
+                    text += "GRAFICO AVG DIAS ITAU\n"
+                    text += "GRAFICO AVG DIAS AMBEV\n"
+                    text += "GRAFICO AVG DIAS PANVEL\n"
+                    text += "GRAFICO MAX DIAS ITAU\n"
+                    text += "GRAFICO MAX DIAS AMBEV\n"
+                    text += "GRAFICO MAX DIAS PANVEL\n"
+                    return send_message(text, chat)
+
+                dia = re.match('[0-9]', split_text[2])
+
+                if dia == None:
+                    dia = 7
+                else:
+                    dia = split_text[2]
+
+                if calculo == 'AVG':
+                    calculo = 1
+                elif calculo == 'MAX':
+                    calculo = 2
+                elif calculo == 'MIN':
+                    calculo = 3
+                else:
+                    calculo = ""
+                    limite = ""
+
+                img = 'TRUE'
+                data = mod.data(arquivo="TRUE")
+                fim = mod.data(data_hoje="TRUE")
+                inicio = mod.data(data_antes=int(dia))
+
+                if re.search('ITAU', text, re.IGNORECASE):
+                    mod.gerador_graficos(2, 1, calculo, inicio, fim, img, data)
+                    bot.send_photo(chat_id=chat, photo=open('./img/grafico_' + data + '.png', 'rb'))
+                if re.search('PANVEL', text, re.IGNORECASE):
+                    mod.gerador_graficos(2, 1, calculo, inicio, fim, img, data)
+                    bot.send_photo(chat_id=chat, photo=open('./img/grafico_'+data+'.png', 'rb'))
+                if re.search('AMBEV', text, re.IGNORECASE):
+                    mod.gerador_graficos(2, 1, calculo, inicio, fim, img, data)
+                    bot.send_photo(chat_id=chat, photo=open('./img/grafico_' + data + '.png', 'rb'))
+
+            if re.search('NOTICIA ', text, re.IGNORECASE):
                 if re.search('ITAU', text, re.IGNORECASE):
                     val = [1]
                     noticias = mod.executaDB("SELECT url_noticia FROM admin_ia.noticias where acao_id = %s", val)
@@ -109,7 +177,7 @@ def echo_all(updates):
                         send_message(text, chat)
                         text = "HELP"
 
-            if re.search('COTACAO', text, re.IGNORECASE):
+            if re.search('COTACAO ', text, re.IGNORECASE):
                 if re.search('ITAU', text, re.IGNORECASE):
                     val = [1]
                     ultimo_valor = mod.executaDB("SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1", val)
@@ -135,8 +203,9 @@ def echo_all(updates):
 
             if(text.upper() =="HELP"):
                 text = "O que voce deseja?\n"
-                text += "Escreva VALOR para ver o valor de uma ação!\n"
+                text += "Escreva COTACAO para ver o valor de uma ação!\n"
                 text += "Escreva NOTICIA para ver as noticias de uma ação!\n"
+                text += "Escreva GRAFICO para ver as noticias de uma ação!\n"
                 send_message(text, chat)
 
         except Exception as e: print(e)

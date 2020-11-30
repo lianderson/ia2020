@@ -91,5 +91,5 @@ if len(sys.argv) > 1:
     switch(1,True)
 else:
     mod.set_modo("prod")
-    switch(6, modo=True)
-    #exec()
+    #switch(6, modo=True)
+    exec()

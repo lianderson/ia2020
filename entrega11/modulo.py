@@ -2,6 +2,7 @@ import dados as dado # Nao esta no git, pois tem dados sensiveis
 from googlesearch import search
 from goose3 import Goose
 import datetime #https://www.w3schools.com/python/python_datetime.aspentrega3entrega3
+from datetime import timedelta
 import urllib.request #pacote para trabalhar com mewb
 import json #pacote para manipular JSON
 import pymysql
@@ -273,7 +274,7 @@ def busca_noticias(acoes,fontes,gravarDB=True):
             noticia = getHtml(fonte, gravarDB, i[0])
 
 #def gerador_graficos(tipo_grafico,acao,inicio,fim):
-def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
+def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim, img=None, img_complemento=None):
     '''#http://www.w3big.com/pt/python3/python3-month-days.html
     mes_inicio = calendar.monthrange(2020, 10)
     print(mes_inicio)
@@ -295,7 +296,9 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
     else:
         calculo = ""
         limite = ""
-    val = ["%Y-%m-%d", acao,acao , inicio, fim]
+    val = ["%Y-%m-%d", acao,acao, inicio, fim]
+    print(val)
+    print(calculo)
     valor = executaDB("select a.nome, "+calculo+", c.data_importacao, DATE_FORMAT (c.data_importacao, %s) AS datafo "
                       "from acao as a join cotacao as c "
                       "ON a.id = c.acao_id "
@@ -304,7 +307,7 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
                       "AND c.data_importacao <= %s "
                       "group by datafo "
                       "order by c.data_importacao",val)
-
+    print(valor)
     datas = list()
     valores = list()
     empresa = ""
@@ -324,7 +327,12 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
         ax.legend(loc='upper right')
         plt.xlabel("Data")  ####
         plt.ylabel("Valor")
-        plt.show()
+        if img is None:
+            plt.show()
+        else:
+            plt.savefig("img/grafico_"+img_complemento+".png")
+            plt.close(fig)
+
     else:
         fig, ax = plt.subplots()
         ax.plot(datas, valores, 'k--', linewidth=2, label='Variação cotação')
@@ -332,11 +340,27 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim):
         ax.legend(loc='upper center')
         plt.xlabel("Altura")  ####
         plt.ylabel("Peso")
-        plt.show()
+        if img is None:
+            plt.show()
+        else:
+            plt.savefig("img/grafico_"+img_complemento+".png")
+            plt.close(fig)
 
-def data():
+def data(arquivo=None,data_hoje=None,data_antes=None):
     hoje = datetime.datetime.now();
-    hoje = hoje.strftime("%d/%m/%Y %H:%M:%S")
+    if data_hoje is not None:
+        hoje = hoje.strftime("%d/%m/%Y")
+        return hoje
+    elif arquivo is not None:
+        hoje = hoje.strftime("%d_%m_%Y_%H_%M_%S")
+        return hoje
+    elif data_antes is not None:
+        hoje = datetime.datetime.now() - timedelta(days=data_antes)
+        hoje = hoje.strftime("%d/%m/%Y")
+        return hoje
+    else:
+        hoje = hoje.strftime("%d/%m/%Y %H:%M:%S")
+        return hoje
     return hoje
 
 def panda(acoes):
