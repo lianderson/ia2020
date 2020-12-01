@@ -46,14 +46,6 @@ def get_json_from_url(url):
     js = json.loads(content)
     return js
 
-def busca_acoes(time,nome=None):
-    if nome is not None:
-        val = [time,nome]
-        acoes = mod.executaDB("SELECT * FROM acao where id_equipe = %s AND nome = %s", val)
-    else:
-        val = [time]
-        acoes = mod.executaDB("SELECT * FROM acao where id_equipe = %s", val)
-    return acoes
 
 def get_updates(offset=None):
     url = URL + "getUpdates"
@@ -75,39 +67,40 @@ def echo_all(updates):
         try:
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
-
+            acoes = mod.executaDB("SELECT id,nome,id_equipe FROM acao where id_equipe = '5'", None)
             ##SUBMENUS
             if(text.upper()=="COTACAO"):
-                acoes = busca_acoes(5)
-                text = "Qual ação você gostaria de ver o último valor? Veja o comando:\n"
-                for i in acoes:
-                    text += "COTACAO "+i[1]+"\n"
+                text = "Qual ação gostaria de ver o último valor? Veja o comando:\n"
+                text += "COTACAO ITAU\n"
+                text += "COTACAO AMBEV\n"
+                text += "COTACAO PANVEL\n"
                 send_message(text, chat)
                 text = ""
 
             if (text.upper() == "NOTICIA"):
-                acoes = busca_acoes(5)
                 text = "Qual ação você gostaria de ver as noticias existentes? Veja o comando:\n"
-                for i in acoes:
-                    text += "NOTICIA " + i[1] + "\n"
+                text += "NOTICIA ITAU\n"
+                text += "NOTICIA AMBEV\n"
+                text += "NOTICIA PANVEL\n"
                 send_message(text, chat)
                 text = ""
 
             if (text.upper() == "GRAFICO"):
-                acoes = busca_acoes(5)
                 text = "Qual ação você gostaria de ver o gráfico de valores dos últimos 15 dias?\n"
                 text += "Legenda:\n"
                 text += "MIN: Valor minimo.\n"
                 text += "AVG: Valor médio.\n"
                 text += "MAX: Valor máximo.\n"
-                text += "DIAS: Quantidades de dias.\n"
                 text += "Comandos possiveis:\n"
-                for i in acoes:
-                    text += "======== "+i[1]+" ===========\n"
-                    text += "GRAFICO MIN DIAS " + i[1] + "\n"
-                    text += "GRAFICO AVG DIAS " + i[1] + "\n"
-                    text += "GRAFICO MAX DIAS " + i[1] + "\n"
-
+                text += "GRAFICO MIN DIAS ITAU\n"
+                text += "GRAFICO MIN DIAS AMBEV\n"
+                text += "GRAFICO MIN DIAS PANVEL\n"
+                text += "GRAFICO AVG DIAS ITAU\n"
+                text += "GRAFICO AVG DIAS AMBEV\n"
+                text += "GRAFICO AVG DIAS PANVEL\n"
+                text += "GRAFICO MAX DIAS ITAU\n"
+                text += "GRAFICO MAX DIAS AMBEV\n"
+                text += "GRAFICO MAX DIAS PANVEL\n"
                 send_message(text, chat)
                 text = ""
 
@@ -120,8 +113,16 @@ def echo_all(updates):
                 if calculo not in calculos_possiveis:
                     text = "Opção inválida!\n"
                     text += "Comandos possiveis:\n"
-                    send_message(text, chat)
-                    text = "grafico"
+                    text += "GRAFICO MIN DIAS ITAU\n"
+                    text += "GRAFICO MIN DIAS AMBEV\n"
+                    text += "GRAFICO MIN DIAS PANVEL\n"
+                    text += "GRAFICO AVG DIAS ITAU\n"
+                    text += "GRAFICO AVG DIAS AMBEV\n"
+                    text += "GRAFICO AVG DIAS PANVEL\n"
+                    text += "GRAFICO MAX DIAS ITAU\n"
+                    text += "GRAFICO MAX DIAS AMBEV\n"
+                    text += "GRAFICO MAX DIAS PANVEL\n"
+                    return send_message(text, chat)
 
                 dia = re.match('[0-9]', split_text[2])
 
@@ -144,20 +145,22 @@ def echo_all(updates):
                 data = mod.data(arquivo="TRUE")
                 fim = mod.data(data_hoje="TRUE")
                 inicio = mod.data(data_antes=int(dia))
-                nome = split_text[3]
-                acoes = busca_acoes(5,nome)
-                for i in acoes:
-                    mod.gerador_graficos(2, i[0], calculo, inicio, fim, img, data)
+
+                if re.search('ITAU', text, re.IGNORECASE):
+                    mod.gerador_graficos(2, 1, calculo, inicio, fim, img, data)
                     bot.send_photo(chat_id=chat, photo=open('../img/grafico_' + data + '.png', 'rb'))
-                text = ""
+                if re.search('PANVEL', text, re.IGNORECASE):
+                    mod.gerador_graficos(2, 1, calculo, inicio, fim, img, data)
+                    bot.send_photo(chat_id=chat, photo=open('../img/grafico_'+data+'.png', 'rb'))
+                if re.search('AMBEV', text, re.IGNORECASE):
+                    mod.gerador_graficos(2, 1, calculo, inicio, fim, img, data)
+                    bot.send_photo(chat_id=chat, photo=open('../img/grafico_' + data + '.png', 'rb'))
+                text = "AJUDA"
 
             ##NOTICIAS
             if re.search('NOTICIA ', text, re.IGNORECASE):
-                split_text = text.split(" ")
-                nome = split_text[1].upper()
-                acoes = busca_acoes(5, nome)
-                for i in acoes:
-                    val = [i[0]]
+                if re.search('ITAU', text, re.IGNORECASE):
+                    val = [1]
                     noticias = mod.executaDB("SELECT url_noticia,substring(noticia_descricao,1,300) AS noticia_descricao FROM admin_ia.noticias where acao_id = %s order by data_importacao DESC limit 10", val)
                     for i in noticias:
                         text += i[1]+"...\n\nLeia mais...\n\n"
@@ -165,16 +168,29 @@ def echo_all(updates):
                         send_message(text, chat)
                         text = ""
 
-                text = ""
+                if re.search('PANVEL', text, re.IGNORECASE):
+                    val = [2]
+                    noticias = mod.executaDB("SELECT url_noticia,substring(noticia_descricao,1,300) AS noticia_descricao FROM admin_ia.noticias where acao_id = %s order by data_importacao DESC limit 10", val)
+                    for i in noticias:
+                        text += i[1]+"...\n\nLeia mais...\n\n"
+                        text = i[0]
+                        send_message(text, chat)
+                        text = ""
+                if re.search('AMBEV', text, re.IGNORECASE):
+                    val = [3]
+                    noticias = mod.executaDB("SELECT url_noticia,substring(noticia_descricao,1,300) AS noticia_descricao FROM admin_ia.noticias where acao_id = %s order by data_importacao DESC limit 10", val)
+                    for i in noticias:
+                        text += i[1]+"...\n\nLeia mais...\n\n"
+                        text = i[0]
+                        send_message(text, chat)
+                        text = ""
+
+                text = "AJUDA"
 
             #COTACAO
             if re.search('COTACAO ', text, re.IGNORECASE):
-                print("aqui")
-                split_text = text.split(" ")
-                nome = split_text[1].upper()
-                acoes = busca_acoes(5, nome)
-                for i in acoes:
-                    val = [i[0]]
+                if re.search('ITAU', text, re.IGNORECASE):
+                    val = [1]
                     ultimo_valor = mod.executaDB("SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1", val)
                     valor_robo = mod.executaDB("SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",val)
                     for valor in ultimo_valor:
@@ -184,7 +200,27 @@ def echo_all(updates):
                             send_message(text, chat)
                             text = "AJUDA"
 
-            text = ""
+                if re.search('PANVEL', text, re.IGNORECASE):
+                    val = [2]
+                    ultimo_valor = mod.executaDB("SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1",val)
+                    valor_robo = mod.executaDB("SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",val)
+                    for valor in ultimo_valor:
+                        for robo in valor_robo:
+                            text = "O ultimo valor da ação é R$ " + str(valor[0])+"\n\n"
+                            text += "Os melhores valores para compras e vendas são:\nValor Compra: R$ " + str(robo[1]) + "\nValor Venda: R$ " + str(robo[2])
+                            send_message(text, chat)
+                            text = "AJUDA"
+
+                if re.search('AMBEV', text, re.IGNORECASE):
+                    val = [3]
+                    ultimo_valor = mod.executaDB("SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1",val)
+                    valor_robo = mod.executaDB("SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",val)
+                    for valor in ultimo_valor:
+                        for robo in valor_robo:
+                            text = "O ultimo valor da ação é R$ " + str(valor[0])+"\n\n"
+                            text += "Os melhores valores para compras e vendas são:\nValor Compra: R$ " + str(robo[1]) + "\nValor Venda: R$ " + str(robo[2])
+                            send_message(text, chat)
+                            text = "AJUDA"
 
             ##MENU PRINCIPAL
             if (text.upper() == "AJUDA"):
