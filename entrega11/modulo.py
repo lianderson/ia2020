@@ -35,7 +35,7 @@ def getUrlGoogle(buscar):
     urls = []
     print("Buscar no Google:")
     try :
-        for i in (search(buscar,tld="com.br",num=15,stop=5,pause=2)):
+        for i in (search(buscar,tld="com.br",num=15,stop=20,pause=2)):
             urls.append(i)
     except ValueError:
         print("Não achou nada no Google")
@@ -52,9 +52,10 @@ def getHtml(urls,gravarBD,id):
         if (noticia.cleaned_text == "" ):
             print("vazio")
             continue
-
-        val = [id,noticia.cleaned_text ]
-        tem_noticias = executaDB("SELECT noticia_descricao FROM noticias WHERE acao_id =%s AND noticia_descricao = %s", val)
+        print(i)
+        print(noticia.cleaned_text[0:100])
+        val = [id,noticia.cleaned_text[0:100]+"%"]
+        tem_noticias = executaDB("SELECT noticia_descricao FROM noticias WHERE acao_id =%s AND noticia_descricao like %s", val)
 
         if tem_noticias:
             print("Noticia já presente no banco de dados")
@@ -303,8 +304,9 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim, img=None, img_com
                       "from acao as a join cotacao as c "
                       "ON a.id = c.acao_id "
                       "where (a.nome = %s OR c.acao_id = %s)"
-                      "AND c.data_importacao >= %s "
-                      "AND c.data_importacao <= %s "
+                      #"AND c.data_importacao >= %s "
+                      #"AND c.data_importacao <= %s "
+                     "AND (c.data_importacao BETWEEN %s AND DATE_SUB(%s, INTERVAL -1 DAY))"
                       "group by datafo "
                       "order by c.data_importacao",val)
     print(valor)
@@ -330,12 +332,14 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim, img=None, img_com
         if img is None:
             plt.show()
         else:
-            plt.savefig("img/grafico_"+img_complemento+".png")
+            plt.savefig("../img/grafico_"+img_complemento+".png")
             plt.close(fig)
 
     else:
         fig, ax = plt.subplots()
         ax.plot(datas, valores, 'k--', linewidth=2, label='Variação cotação')
+        for x in valor:
+            ax.text(x[2].strftime('%d/%m/%Y'), x[1], round(x[1],2), color='black', bbox=dict(facecolor='royalblue', alpha=0.5), ha="center")
         ax.set_title("Ação "+empresa)
         ax.legend(loc='upper center')
         plt.xlabel("Altura")  ####
@@ -343,7 +347,7 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim, img=None, img_com
         if img is None:
             plt.show()
         else:
-            plt.savefig("img/grafico_"+img_complemento+".png")
+            plt.savefig("../img/grafico_"+img_complemento+".png")
             plt.close(fig)
 
 def data(arquivo=None,data_hoje=None,data_antes=None):
@@ -363,13 +367,13 @@ def data(arquivo=None,data_hoje=None,data_antes=None):
         return hoje
     return hoje
 
-def panda(acoes):
+def analise(acoes,dias):
     for i in acoes:
         acao = i[0]
         equipe = i[2]
-        val = [equipe, acao]
-        print(val)
-        valores_acao = executaDB("SELECT a.nome,c.preco,c.data_importacao from acao as a join cotacao as c ON a.id = c.acao_id where equipe_id= %s AND acao_id= %s",val)
+        inicio = data(data_antes=dias)
+        val = [equipe, acao, inicio+" 00:00:00"]
+        valores_acao = executaDB("SELECT a.nome,c.preco,c.data_importacao from acao as a join cotacao as c ON a.id = c.acao_id where c.equipe_id= %s AND c.acao_id= %s AND c.data_importacao >= %s",val)
         df = pd.DataFrame(valores_acao)
 
         mediana = stats.gmean(df[1], axis=0)
@@ -380,18 +384,28 @@ def panda(acoes):
         media_geometrica = statistics.geometric_mean(df[1])
 
         val = [equipe, acao, float(df[1].sum()), int(df[1].count()), float(df[1].min()), float(df[1].max()),
-               float(df[1].std()), float(df[1].mean()), float(mediana), float(moda), float(aplitude), float(variacao), float(media_harmonica), float(media_geometrica)]
+               float(df[1].std()), float(df[1].mean()), float(mediana), float(moda), float(aplitude), float(variacao), float(media_harmonica), float(media_geometrica), int(dias)]
 
         query = executaDB(
-            "INSERT INTO equipe5_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra,media,mediana,moda,amplitude,variacao,media_harmonica,media_geometrica) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",val)
+            "INSERT INTO equipe5_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra,media,mediana,moda,amplitude,variacao,media_harmonica,media_geometrica,periodo_analise) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",val)
 
 def robo(acao,nome):
-    val = [acao]
-    analise = executaDB("SELECT * FROM admin_ia.equipe5_analise where acao_id=%s order by id desc limit 1", val)
-    ultimo_valor = executaDB("SELECT preco FROM admin_ia.cotacao where acao_id = '1' order by id desc limit 1", None)
+    val = [acao,15]
+    analise = executaDB("SELECT * FROM admin_ia.equipe5_analise where acao_id=%s and periodo_analise =%s order by id desc  limit 1", val)
+    #val = [acao]
+    #ultimo_valor = executaDB("SELECT preco FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1", val)
     for i in analise:
-        print(i[0])
+        valor_compra = round(i[9]-(i[9]*.10),2)
+        valor_venda = round(i[9]+(i[9]*.10),2)
+        '''round(x[1],2)
+        print(i[9]+(i[9]*.10))
+        print(i[9])
+        print(i[9] - (i[9] * .10))
         print(ultimo_valor[0])
+        '''
+        val = [valor_compra,valor_venda, acao,'5']
+        executaDB("INSERT INTO equipe5_robo(valor_compra,valor_venda,acao_id,equipe_id) values(%s,%s,%s,%s)",val)
+
 
 def bug():
     print("Modo destruir a humanidade habilitado !!! ")

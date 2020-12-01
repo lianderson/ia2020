@@ -67,7 +67,8 @@ def echo_all(updates):
         try:
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
-
+            acoes = mod.executaDB("SELECT id,nome,id_equipe FROM acao where id_equipe = '5'", None)
+            ##SUBMENUS
             if(text.upper()=="COTACAO"):
                 text = "Qual ação gostaria de ver o último valor? Veja o comando:\n"
                 text += "COTACAO ITAU\n"
@@ -78,9 +79,9 @@ def echo_all(updates):
 
             if (text.upper() == "NOTICIA"):
                 text = "Qual ação você gostaria de ver as noticias existentes? Veja o comando:\n"
-                text += "NOTICIAS ITAU\n"
-                text += "NOTICIAS AMBEV\n"
-                text += "NOTICIAS PANVEL\n"
+                text += "NOTICIA ITAU\n"
+                text += "NOTICIA AMBEV\n"
+                text += "NOTICIA PANVEL\n"
                 send_message(text, chat)
                 text = ""
 
@@ -103,10 +104,11 @@ def echo_all(updates):
                 send_message(text, chat)
                 text = ""
 
-
+            ###FUNCIONALIDADES
+            ##GRAFICO
             if re.search('GRAFICO ', text, re.IGNORECASE):
                 split_text = text.split(" ")
-                calculo = split_text[1]
+                calculo = split_text[1].upper()
                 calculos_possiveis = ['MIN','AVG','MAX']
                 if calculo not in calculos_possiveis:
                     text = "Opção inválida!\n"
@@ -146,62 +148,83 @@ def echo_all(updates):
 
                 if re.search('ITAU', text, re.IGNORECASE):
                     mod.gerador_graficos(2, 1, calculo, inicio, fim, img, data)
-                    bot.send_photo(chat_id=chat, photo=open('./img/grafico_' + data + '.png', 'rb'))
+                    bot.send_photo(chat_id=chat, photo=open('../img/grafico_' + data + '.png', 'rb'))
                 if re.search('PANVEL', text, re.IGNORECASE):
                     mod.gerador_graficos(2, 1, calculo, inicio, fim, img, data)
-                    bot.send_photo(chat_id=chat, photo=open('./img/grafico_'+data+'.png', 'rb'))
+                    bot.send_photo(chat_id=chat, photo=open('../img/grafico_'+data+'.png', 'rb'))
                 if re.search('AMBEV', text, re.IGNORECASE):
                     mod.gerador_graficos(2, 1, calculo, inicio, fim, img, data)
-                    bot.send_photo(chat_id=chat, photo=open('./img/grafico_' + data + '.png', 'rb'))
+                    bot.send_photo(chat_id=chat, photo=open('../img/grafico_' + data + '.png', 'rb'))
+                text = "AJUDA"
 
+            ##NOTICIAS
             if re.search('NOTICIA ', text, re.IGNORECASE):
                 if re.search('ITAU', text, re.IGNORECASE):
                     val = [1]
-                    noticias = mod.executaDB("SELECT url_noticia FROM admin_ia.noticias where acao_id = %s", val)
+                    noticias = mod.executaDB("SELECT url_noticia,substring(noticia_descricao,1,300) AS noticia_descricao FROM admin_ia.noticias where acao_id = %s order by data_importacao DESC limit 10", val)
                     for i in noticias:
-                        text = i[0]
+                        text += i[1]+"...\n\nLeia mais...\n\n"
+                        text += i[0]
                         send_message(text, chat)
-                        text = "HELP"
+                        text = ""
+
                 if re.search('PANVEL', text, re.IGNORECASE):
                     val = [2]
-                    noticias = mod.executaDB("SELECT url_noticia FROM admin_ia.noticias where acao_id = %s", val)
+                    noticias = mod.executaDB("SELECT url_noticia,substring(noticia_descricao,1,300) AS noticia_descricao FROM admin_ia.noticias where acao_id = %s order by data_importacao DESC limit 10", val)
                     for i in noticias:
+                        text += i[1]+"...\n\nLeia mais...\n\n"
                         text = i[0]
                         send_message(text, chat)
-                        text = "HELP"
+                        text = ""
                 if re.search('AMBEV', text, re.IGNORECASE):
                     val = [3]
-                    noticias = mod.executaDB("SELECT url_noticia FROM admin_ia.noticias where acao_id = %s", val)
+                    noticias = mod.executaDB("SELECT url_noticia,substring(noticia_descricao,1,300) AS noticia_descricao FROM admin_ia.noticias where acao_id = %s order by data_importacao DESC limit 10", val)
                     for i in noticias:
+                        text += i[1]+"...\n\nLeia mais...\n\n"
                         text = i[0]
                         send_message(text, chat)
-                        text = "HELP"
+                        text = ""
 
+                text = "AJUDA"
+
+            #COTACAO
             if re.search('COTACAO ', text, re.IGNORECASE):
                 if re.search('ITAU', text, re.IGNORECASE):
                     val = [1]
                     ultimo_valor = mod.executaDB("SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1", val)
-                    for i in ultimo_valor:
-                        text = "O ultimo valor da ação é R$ " + str(i[0])
-                        send_message(text, chat)
-                        text = "HELP"
+                    valor_robo = mod.executaDB("SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",val)
+                    for valor in ultimo_valor:
+                        for robo in valor_robo:
+                            text = "O ultimo valor da ação é R$ " + str(valor[0])+"\n\n"
+                            text += "Os melhores valores para compras e vendas são:\nValor Compra: R$ " + str(robo[1])+"\nValor Venda: R$ "+str(robo[2])
+                            send_message(text, chat)
+                            text = "AJUDA"
 
                 if re.search('PANVEL', text, re.IGNORECASE):
                     val = [2]
-                    ultimo_valor = mod.executaDB("SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1", val)
-                    for i in ultimo_valor:
-                        text = "O ultimo valor da ação é R$ "+str(i[0])
-                        send_message(text, chat)
-                        text = "HELP"
+                    ultimo_valor = mod.executaDB("SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1",val)
+                    valor_robo = mod.executaDB("SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",val)
+                    for valor in ultimo_valor:
+                        for robo in valor_robo:
+                            text = "O ultimo valor da ação é R$ " + str(valor[0])+"\n\n"
+                            text += "Os melhores valores para compras e vendas são:\nValor Compra: R$ " + str(robo[1]) + "\nValor Venda: R$ " + str(robo[2])
+                            send_message(text, chat)
+                            text = "AJUDA"
+
                 if re.search('AMBEV', text, re.IGNORECASE):
                     val = [3]
-                    ultimo_valor = mod.executaDB("SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1", val)
-                    for i in ultimo_valor:
-                        text = "O ultimo valor da ação é R$ " + str(i[0])
-                        send_message(text, chat)
-                        text = "HELP"
+                    ultimo_valor = mod.executaDB("SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1",val)
+                    valor_robo = mod.executaDB("SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",val)
+                    for valor in ultimo_valor:
+                        for robo in valor_robo:
+                            text = "O ultimo valor da ação é R$ " + str(valor[0])+"\n\n"
+                            text += "Os melhores valores para compras e vendas são:\nValor Compra: R$ " + str(robo[1]) + "\nValor Venda: R$ " + str(robo[2])
+                            send_message(text, chat)
+                            text = "AJUDA"
 
-            if(text.upper() =="HELP"):
+            ##MENU PRINCIPAL
+            if (text.upper() == "AJUDA"):
+                bot.send_photo(chat_id=chat, photo=open('../img/bot.jpg', 'rb'))
                 text = "O que voce deseja?\n"
                 text += "Escreva COTACAO para ver o valor de uma ação!\n"
                 text += "Escreva NOTICIA para ver as noticias de uma ação!\n"
@@ -209,7 +232,6 @@ def echo_all(updates):
                 send_message(text, chat)
 
         except Exception as e: print(e)
-
 
 
 def get_last_chat_id_and_text(updates):

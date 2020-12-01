@@ -12,7 +12,7 @@ def switch(opcao,modo=None):
     elif opcao == 4:
         gera_graficos()
     elif opcao == 5:
-        panda()
+        analise()
     elif opcao == 6:
         robo()
     else:
@@ -39,9 +39,9 @@ def buscar_noticias(modo):
     fonte = None
     mod.busca_noticias(acoes,fonte,gravarDB=True)
 
-def panda():
+def analise():
     acoes = mod.executaDB("SELECT id,nome,id_equipe FROM acao where id_equipe = '5'", None)
-    mod.panda(acoes)
+    mod.analise(acoes,15)
 
 def contabiliza_palavras():
     mod.populaPalavras()
@@ -72,6 +72,8 @@ def exec():
                                             "\n2) Buscar noticias sobre suas ações?"
                                             "\n3) Contabilizar palavras das noticias presentes no banco de dados?"
                                             "\n4) Exibir gráficos da valorização de suas ações?"
+                                            "\n5) Gerar dados de analise dos últimos 15 dias?"
+                                            "\n6) Atualizar números robo?"
                                             "\n0) Finalizar Programa\nDigite a Opção: "
             )
             '''Se for digitado qq coisa que não seja int, vai dar erro para exception'''
@@ -86,9 +88,9 @@ def exec():
 
 if len(sys.argv) > 1:
     mod.set_modo(sys.argv[1])
-    #mod.get_modo()
     print(mod.data())
-    switch(1,True)
+    opcao = sys.argv[2]
+    switch(int(opcao),True)
 else:
     mod.set_modo("prod")
     #switch(6, modo=True)
