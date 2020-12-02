@@ -9,7 +9,7 @@ conexao = pymysql.connect(host='viajuntos.com.br',
                           user='admin_ia', passwd='admin_ia', db='admin_ia')
 
 
-TOKEN = '1448255531:AAHlfO2K29_Uyuw78gVzwvlmL-bPg3gbRac'
+TOKEN = '1448255531:AAEs2-W5QaebpiozCMVHXK7ciREeupBpeSA'
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 

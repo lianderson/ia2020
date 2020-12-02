@@ -68,7 +68,7 @@ def rodarBusca():
             # ===============================================================================
             conexao = pymysql.connect(host='viajuntos.com.br', user='admin_ia', password='admin_ia', db='admin_ia')
             cursor_banco = conexao.cursor()
-            sql = 'SELECT media FROM equipe2_analise WHERE acao_id = %s' % (acao_id)
+            sql = 'SELECT media, desvio_padra FROM equipe2_analise WHERE acao_id = %s' % (acao_id)
             cursor_banco.execute(sql)            
             for b in (cursor_banco.fetchall()):
                 arrayAnalise.append(b)
@@ -76,6 +76,13 @@ def rodarBusca():
 
             for c in(arrayAnalise):                
                 v_analise_media = c[0]
+                v_desvio_padrao = c[1]
+
+                v_valor_compra =  (acao_preco_atual - v_desvio_padrao)
+                v_valor_venda = (acao_preco_atual + v_desvio_padrao)
+
+                v_valor_compra = float(v_valor_compra)
+                v_valor_venda = float(v_valor_venda)
 
             if (acao_preco_atual < float(v_analise_media)):
                 decisao = ''
@@ -94,7 +101,7 @@ def rodarBusca():
             # inserindo a cotacao na tabela cotacao no banco
             # ===============================================================================
             cursor_banco = conexao.cursor()
-            sql = 'INSERT INTO equipe2_robo(valor_compra,valor_venda,acao_id,equipe_id,valor_atual,decisao) values(%s,%s,%s,%s,%s,"%s") ' % (acao_preco_atual,acao_preco_atual,acao_id,equipe_id,acao_preco_atual,decisao)
+            sql = 'INSERT INTO equipe2_robo(valor_compra,valor_venda,acao_id,equipe_id,valor_atual,decisao) values(%s,%s,%s,%s,%s,"%s") ' % (v_valor_compra,v_valor_venda,acao_id,equipe_id,acao_preco_atual,decisao)
             cursor_banco.execute(sql)
             conexao.commit()
             cursor_banco.close()
