@@ -18,7 +18,10 @@ import seaborn as sns
 from scipy import stats
 import pandas as pd
 import statistics
-
+import bot
+import telegram
+import re
+bot2 = telegram.Bot(token='1464243153:AAEvApGons_u7ScnndVzBwF4yeswJ4Ua9DY')
 #https://wiki.python.org.br/ManipulandoStringsComPython
 
 modo = "prod"
@@ -393,33 +396,265 @@ def analise(acoes,dias):
         variacao = df[1].var()
         media_harmonica = stats.hmean(df[1], axis=0)
         media_geometrica = statistics.geometric_mean(df[1])
-
+        if acao == 1:
+            quantidade = 2
+        elif acao == 2:
+            quantidade = 1
+        elif acao == 3:
+            quantidade = 8
         val = [equipe, acao, float(df[1].sum()), int(df[1].count()), float(df[1].min()), float(df[1].max()),
-               float(df[1].std()), float(df[1].mean()), float(mediana), float(moda), float(aplitude), float(variacao), float(media_harmonica), float(media_geometrica), int(dias)]
+               float(df[1].std()), float(df[1].mean()), float(mediana), float(moda), float(aplitude), float(variacao), float(media_harmonica), float(media_geometrica), int(dias), quantidade]
 
         query = executaDB(
-            "INSERT INTO equipe5_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra,media,mediana,moda,amplitude,variacao,media_harmonica,media_geometrica,periodo_analise) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",val)
+            "INSERT INTO equipe5_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra,media,mediana,moda,amplitude,variacao,media_harmonica,media_geometrica,periodo_analise,quantidade_compra) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",val)
 
 def robo(acao,nome):
-    val = [acao,15]
-    quantidade = [2,1,8]
-    n = 0
+    val = [acao, 15 ]
     analise = executaDB("SELECT * FROM admin_ia.equipe5_analise where acao_id=%s and periodo_analise =%s order by id desc  limit 1", val)
-    #val = [acao]
-    #ultimo_valor = executaDB("SELECT preco FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1", val)
     for i in analise:
-
-        comprar = quantidade[n]
-        valor_compra = round(i[9]-(i[9]*0.03),2)
-        valor_venda = round(i[9]+(i[9]*0.03),2)
-        '''round(x[1],2)
-        print(i[9]+(i[9]*.10))
-        print(i[9])
-        print(i[9] - (i[9] * .10))
-        print(ultimo_valor[0])
-        '''
+        media = i[8]
+        desvio = i[7]/10
+        valor_compra = round(media-(media*desvio),2)
+        valor_venda = round(media+(media*desvio),2)
+        comprar = i[17]
+        print(media)
+        print(desvio)
         val = [valor_compra,valor_venda, acao,'5', comprar]
         executaDB("INSERT INTO equipe5_robo(valor_compra,valor_venda,acao_id,equipe_id,quantidade_compra) values(%s,%s,%s,%s,%s)",val)
+
+def menuBot(text,chat):
+    if (text.upper() == "STATUS"):
+        print("status")
+        acoes = busca_acoes(5, None)
+        text = ""
+        for acao in acoes:
+            val = [acao[0]]
+            ultimo_valor = executaDB(
+                "SELECT preco,data_importacao FROM cotacao where acao_id = %s order by id desc limit 1", val)
+            val = ["%Y-%m-%d_%H:%i", acao[0]]
+            valor_robo = executaDB(
+                "SELECT *,DATE_FORMAT (avisou, %s) AS datafo FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",
+                val)
+            for valor in ultimo_valor:
+                for robo in valor_robo:
+                    valor = valor[0]
+                    compra = robo[1]
+                    venda = robo[2]
+                    hoje = datetime.datetime.now();
+                    hoje = hoje.strftime("%Y-%m-%d_%H:%M")
+                    if "naoavisar" not in robo[8]:
+                        if robo[9] not in hoje:
+                            if valor <= compra:
+                                if "comprado" not in robo[8]:
+                                    text = "COMPRA A ACAO " + str(acao[1])
+                                    text += "\nValor " + str(valor)
+                                    text += "\nCompra sujerida " + str(compra)
+                                    val = [robo[0]]
+                                    executaDB(
+                                        "UPDATE `admin_ia`.`equipe5_robo` SET `avisou` = now() WHERE `id` = %s", val)
+                                    bot.send_message(text, chat)
+                            elif valor >= venda:
+                                if "vendido" not in robo[8]:
+                                    text = "VENDA A ACAO " + str(acao[1])
+                                    text += "\nValor " + str(valor)
+                                    text += "\nVenda sujerida " + str(venda)
+                                    val = [robo[0]]
+                                    executaDB(
+                                        "UPDATE `admin_ia`.`equipe5_robo` SET `avisou` = now() WHERE `id` = %s", val)
+                                    bot.send_message(text, chat)
+    elif (text.upper() == "GRAFICO"):
+        acoes = busca_acoes(5)
+        text = "Qual ação você gostaria de ver o gráfico de valores dos últimos 15 dias?\n"
+        text += "Legenda:\n"
+        text += "MIN: Valor minimo.\n"
+        text += "AVG: Valor médio.\n"
+        text += "MAX: Valor máximo.\n"
+        text += "DIAS: Quantidades de dias.\n"
+        text += "Comandos possiveis:\n"
+        for i in acoes:
+            text += "======== " + i[1] + " ===========\n"
+            text += "GRAFICO MIN DIAS " + i[1] + "\n"
+            text += "GRAFICO AVG DIAS " + i[1] + "\n"
+            text += "GRAFICO MAX DIAS " + i[1] + "\n"
+
+        bot.send_message(text, chat)
+        text = ""
+    elif (text.upper() == "COTACAO"):
+        acoes = busca_acoes(5)
+        text = "Qual ação você gostaria de ver o último valor? Veja o comando:\n"
+        for i in acoes:
+            text += "COTACAO " + i[1] + "\n"
+        bot.send_message(text, chat)
+        text = ""
+    elif (text.upper() == "NOTICIA"):
+        acoes = busca_acoes(5)
+        text = "Qual ação você gostaria de ver as noticias existentes? Veja o comando:\n"
+        for i in acoes:
+            text += "NOTICIA " + i[1] + "\n"
+        bot.send_message(text, chat)
+        text = ""
+    elif (text.upper() == "COMPRA"):
+        acoes = busca_acoes(5)
+        text = "Qual ação você gostaria de ver de informa compra? Veja o comando:\n"
+        for i in acoes:
+            text += "COMPRA " + i[1] + "\n"
+        bot.send_message(text, chat)
+        text = ""
+    elif (text.upper() == "VENDA"):
+        acoes = busca_acoes(5)
+        text = "Qual ação você gostaria de ver de informa compra? Veja o comando:\n"
+        for i in acoes:
+            text += "VENDA " + i[1] + "\n"
+        bot.send_message(text, chat)
+        text = ""
+    elif (text.upper() == "AVISO"):
+        acoes = busca_acoes(5)
+        text = "Qual ação você gostaria de ver de informa compra? Veja o comando:\n"
+        for i in acoes:
+            text += "AVISO NAO " + i[1] + "\n"
+        for i in acoes:
+            text += "AVISO SIM " + i[1] + "\n"
+        bot.send_message(text, chat)
+        text = ""
+    else:
+        bot2.send_photo(chat_id=chat, photo=open('../img/bot.jpg', 'rb'))
+        text = "O que voce deseja?\n"
+        text += "Escreva COTACAO para ver o valor de uma ação!\n"
+        text += "Escreva NOTICIA para ver as noticias de uma ação!\n"
+        text += "Escreva GRAFICO para ver as noticias de uma ação!\n"
+        text += "Escreva AVISO para ver as opções de avisos!\n"
+        bot.send_message(text, chat)
+
+def funcoesBot(text,chat):
+    if re.search('GRAFICO ', text, re.IGNORECASE):
+        split_text = text.split(" ")
+        calculo = split_text[1].upper()
+        calculos_possiveis = ['MIN', 'AVG', 'MAX']
+        if calculo not in calculos_possiveis:
+            text = "Opção inválida!\n"
+            text += "Comandos possiveis:\n"
+            bot.send_message(text, chat)
+            text = "grafico"
+
+        dia = re.match('[0-9]', split_text[2])
+
+        if dia == None:
+            dia = 7
+        else:
+            dia = split_text[2]
+
+        if calculo == 'AVG':
+            calculo = 1
+        elif calculo == 'MAX':
+            calculo = 2
+        elif calculo == 'MIN':
+            calculo = 3
+        else:
+            calculo = ""
+            limite = ""
+
+        img = 'TRUE'
+        data_new = data(arquivo="TRUE")
+        fim = data(data_hoje="TRUE")
+        inicio = data(data_antes=int(dia))
+        nome = split_text[3]
+        acoes = busca_acoes(5, nome)
+        for i in acoes:
+            gerador_graficos(2, i[0], calculo, inicio, fim, img, data_new)
+            bot2.send_photo(chat_id=chat, photo=open('../img/grafico_' + data_new + '.png', 'rb'))
+        text = ""
+    elif re.search('NOTICIA ', text, re.IGNORECASE):
+        split_text = text.split(" ")
+        nome = split_text[1].upper()
+        acoes = busca_acoes(5, nome)
+        for i in acoes:
+            val = [i[0]]
+            noticias = executaDB(
+                "SELECT url_noticia,substring(noticia_descricao,1,300) AS noticia_descricao FROM admin_ia.noticias where acao_id = %s order by data_importacao DESC limit 10",
+                val)
+            for i in noticias:
+                text += i[1] + "...\n\nLeia mais...\n\n"
+                text += i[0]
+                bot.send_message(text, chat)
+                text = ""
+
+        text = ""
+    elif re.search('COTACAO ', text, re.IGNORECASE):
+        split_text = text.split(" ")
+        nome = split_text[1].upper()
+        acoes = busca_acoes(5, nome)
+        for i in acoes:
+            val = [i[0]]
+            ultimo_valor = executaDB(
+                "SELECT preco,data_importacao FROM admin_ia.cotacao where acao_id = %s order by id desc limit 1", val)
+            valor_robo = executaDB(
+                "SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1", val)
+            for valor in ultimo_valor:
+                for robo in valor_robo:
+                    text = "O ultimo valor da ação é R$ " + str(valor[0]) + "\n\n"
+                    text += "Os melhores valores para compras e vendas são:\nValor Compra: R$ " + str(
+                        robo[1]) + "\nValor Venda: R$ " + str(robo[2])
+                    text += "\nQuantidade " + str(robo[6])
+                    bot.send_message(text, chat)
+                    text = "AJUDA"
+
+        text = ""
+    elif re.search('VENDA ', text, re.IGNORECASE):
+        split_text = text.split(" ")
+        nome = split_text[1].upper()
+        acoes = busca_acoes(5, nome)
+        for i in acoes:
+            val = [i[0]]
+            valor_robo = executaDB(
+                "SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",
+                val)
+            for i in valor_robo:
+                val = [i[0]]
+                print(val)
+                executaDB("UPDATE equipe5_robo SET confirmado = 'vendido' WHERE id = %s", val)
+
+    elif re.search('COMPRA ', text, re.IGNORECASE):
+        split_text = text.split(" ")
+        nome = split_text[1].upper()
+        acoes = busca_acoes(5, nome)
+        for i in acoes:
+            val = [i[0]]
+            valor_robo = executaDB(
+                "SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",
+                val)
+            for i in valor_robo:
+                val = [i[0]]
+                print(val)
+                executaDB("UPDATE equipe5_robo SET confirmado = 'comprado' WHERE id = %s", val)
+
+    elif re.search('AVISO ', text, re.IGNORECASE):
+        split_text = text.split(" ")
+        modo = split_text[1].upper()
+        nome = split_text[2].upper()
+        if "TODAS" in nome:
+            acoes = busca_acoes(5)
+        else:
+            acoes = busca_acoes(5, nome)
+        confirmado = "naoavisar"
+        if "SIM" in modo:
+            confirmado = "avisar"
+        for i in acoes:
+            val = [i[0]]
+            print(val)
+            valor_robo = executaDB(
+                "SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1", val)
+            for i in valor_robo:
+                val = [confirmado, i[0]]
+                print(val)
+                executaDB("UPDATE equipe5_robo SET confirmado = %s WHERE id = %s", val)
+    else:
+        bot2.send_photo(chat_id=chat, photo=open('../img/bot.jpg', 'rb'))
+        text = "O que voce deseja?\n"
+        text += "Escreva COTACAO para ver o valor de uma ação!\n"
+        text += "Escreva NOTICIA para ver as noticias de uma ação!\n"
+        text += "Escreva GRAFICO para ver as noticias de uma ação!\n"
+        text += "Escreva AVISO para ver as opções de avisos!\n"
+        bot.send_message(text, chat)
 
 def bug():
     print("Modo destruir a humanidade habilitado !!! ")
