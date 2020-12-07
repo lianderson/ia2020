@@ -86,7 +86,7 @@ def get_noticia_url(url, id_acao):
 
 
 def busca_noticias(acao, id_acao):
-    tmpbusca = consulta(str(acao), 2)
+    tmpbusca = consulta(str(acao), 9)
     if(len(tmpbusca) > 0):
         for item in tmpbusca:
             #busca = tmpbusca[0]
