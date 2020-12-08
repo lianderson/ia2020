@@ -105,6 +105,7 @@ def busca_noticias(acao, id_acao):
                     #nao tem repetido, cadastrar
                     inserir_noticia(resultado)
 
+# insere noticias no banco
 def inserir_noticia(noticia):
     data = time.strftime('%Y-%m-%d %H:%M:%S')
     conexao = pymysql.connect(host='viajuntos.com.br', user='admin_ia', passwd='admin_ia',db='admin_ia')
