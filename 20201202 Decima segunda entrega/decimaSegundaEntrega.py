@@ -78,12 +78,17 @@ def rodarBusca():
                 v_analise_media = c[0]
                 v_desvio_padrao = c[1]
 
+                # o valor de compra é definido pelo valor atual menos o desvio padrão, ou seja, se mais barato comprar
                 v_valor_compra =  (acao_preco_atual - v_desvio_padrao)
+                # o valor de venda é definido pelo valor atual mais o desvio padrão, ou seja, se mais caro vender
                 v_valor_venda = (acao_preco_atual + v_desvio_padrao)
-
+            
                 v_valor_compra = float(v_valor_compra)
                 v_valor_venda = float(v_valor_venda)
 
+            # se o preco atual da acao for menor que a media da analise, então comprar 
+            # se o preco atual da acao for maior que a media da analise, então vender 
+            # ou se igual define-se como neutro
             if (acao_preco_atual < float(v_analise_media)):
                 decisao = ''
                 decisao = 'comprar'
