@@ -35,7 +35,7 @@ def retornaNoticias():
                               user='admin_ia', passwd='admin_ia', db='admin_ia')
     arrayNoticias = []
     cursor_banco = conexao.cursor()
-    sql = "SELECT * FROM noticias WHERE equipe_id = 2"
+    sql = "SELECT * FROM noticias WHERE equipe_id = 2 ORDER BY data_importacao ASC"
     cursor_banco.execute(sql)
     for linhas in (cursor_banco.fetchall()):
         arrayNoticias.append(linhas)
@@ -107,7 +107,7 @@ def echo_all(updates):
                 arrayNoticias = retornaNoticias()
 
                 for linhas in (arrayNoticias):
-                    text = linhas[2]
+                    text = "Data: " + str(linhas[3]) + " Noticia: " + linhas[2]
                     send_message(text, chat)
                     text = ""
 
