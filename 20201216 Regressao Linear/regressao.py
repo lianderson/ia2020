@@ -2,7 +2,7 @@ from sklearn.datasets import load_boston
 boston = load_boston()
 
 #==========================================================================================
-# ORGANIZANDO A BASE
+# ORGANIZANDO A BASE - ANALISE EXPLORATORIA
 #==========================================================================================
 print(boston.keys())
 # Resultado
@@ -49,16 +49,6 @@ regression.fit(X_train, y_train)
 # previsões
 Y_prev = regression.predict(X_test)
 
-# Gerando o grafico
-import matplotlib.pyplot as plt
-#matplotlib inline
-plt.scatter(y_test, Y_prev)
-range = [y_test.min(), Y_prev.max()]
-plt.plot(range, range, 'red')
-plt.xlabel('Preço real')
-plt.ylabel('Preço predito')
-#plt.show()
-
 # O Erro Médio Absoluto é a soma de todos esses erros divido pelo número de pontos.
 from sklearn.metrics import mean_absolute_error
 print(f'MAE {mean_absolute_error(y_test, Y_prev)}')
@@ -71,6 +61,16 @@ print(f'MSE {mean_squared_error(y_test, Y_prev)}')
 from sklearn.model_selection import cross_val_score
 resultado = cross_val_score(regression, X_test, y_test, cv = 10)
 print(resultado.mean())
+
+# Gerando o grafico
+import matplotlib.pyplot as plt
+#matplotlib inline
+plt.scatter(y_test, Y_prev)
+range = [y_test.min(), Y_prev.max()]
+plt.plot(range, range, 'red')
+plt.xlabel('Preço real')
+plt.ylabel('Preço predito')
+plt.show()
 
 #fonte
 #https://medium.com/@datalivre/regressao-linear-metricas-com-python-953af0a5dd74

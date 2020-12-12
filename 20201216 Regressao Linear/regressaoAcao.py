@@ -31,12 +31,6 @@ for linhas in (cursor_banco.fetchall()):
     arrayRobo.append(linhas)
 cursor_banco.close()
 
-base = pd.DataFrame(arrayRobo)
-print(base)
-
-base.columns = ['valor_compra', 'valor_venda', 'valor_atual']
-print(base)
-
 #for a in (arrayRobo):
     #valor_compra = a[1]
     #valor_venda = a[2]
@@ -44,6 +38,16 @@ print(base)
     #valor_atual = a[6]
 
     #print(valor_compra)
+
+#==========================================================================================
+# ORGANIZANDO A BASE - ANALISE EXPLORATORIA
+#==========================================================================================
+
+base = pd.DataFrame(arrayRobo)
+print(base)
+
+base.columns = ['valor_compra', 'valor_venda', 'valor_atual']
+print(base)
 
 #==========================================================================================
 # TREINO E TESTE
