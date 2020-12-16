@@ -38,7 +38,7 @@ def get_modo():
     return modo
 
 '''
-Buscar ações da equipe, se pasar o nome, retorna a ação especifica.
+Buscar ações da equipe, se pasar o nome, retorna a ação especifica passada no nome.
 '''
 
 def busca_acoes(time,nome=None):
@@ -51,7 +51,7 @@ def busca_acoes(time,nome=None):
     return acoes
 
 '''
-Buscar ações da equipe
+Buscar ações passadas no buscar no google
 '''
 def getUrlGoogle(buscar):
     urls = []
@@ -63,6 +63,9 @@ def getUrlGoogle(buscar):
         print("Não achou nada no Google")
     return urls
 
+'''
+Buscar html dos sites que passar na lista urls
+'''
 def getHtml(urls,gravarBD,id):
     noticias = []
     for i in urls:
@@ -70,15 +73,16 @@ def getHtml(urls,gravarBD,id):
         g=Goose()
         noticia=g.extract(url=i)
         hoje = datetime.datetime.now()
-
+        ##Se não conseguiu ler o html passa
         if (noticia.cleaned_text == "" ):
             print("vazio")
             continue
-        print(i)
-        print(noticia.cleaned_text[0:100])
+        #print(i)
+        #print(noticia.cleaned_text[0:100])
+        ##noticia.cleaned_text[0:100]+"%" -> forma um like com os 100 caracteres da noticia para bater se existe
         val = [id,noticia.cleaned_text[0:100]+"%"]
         tem_noticias = executaDB("SELECT noticia_descricao FROM noticias WHERE acao_id =%s AND noticia_descricao like %s", val)
-
+        ##Se a noticia já existe não tem pq gravar de novo
         if tem_noticias:
             print("Noticia já presente no banco de dados")
             continue
@@ -91,6 +95,9 @@ def getHtml(urls,gravarBD,id):
 
     return noticias
 
+'''
+Função para criar um arquivo em um local que for enviado no arquivo e o dados que for enviado na varival noticia
+'''
 def setArquivo(arquivo,noticia):
     for i in noticia:
         hoje = datetime.datetime.now();
@@ -98,6 +105,9 @@ def setArquivo(arquivo,noticia):
         f = open(arquivo, 'a')
         f.write(str(hoje)+"\n" + i+"\n")
         f.close()
+'''
+Função para criar um arquivo de log de erros
+'''
 
 def setLog(arquivo,erro):
         hoje = datetime.datetime.now();
@@ -106,8 +116,9 @@ def setLog(arquivo,erro):
         f.write(str(hoje)+"\n" + erro+"\n")
         f.close()
 
-
-#def fnYFinJSON(stock):
+'''
+Pega na API do yahoo, os dados da ação desejada
+'''
 def getAcaoJson(acao):
       urlData = "https://query2.finance.yahoo.com/v7/finance/quote?symbols="+acao
       print(urlData)
@@ -119,6 +130,9 @@ def getAcaoJson(acao):
       yFinJSON = json.loads(data)
       return yFinJSON["quoteResponse"]["result"][0]
 
+'''
+Filtra os dados da getAcaoJson desejado e grava no bd
+'''
 def getDados(id, acao, gravaBD):
     fields = {'shortName': 'Company', 'bookValue': 'Book Value', 'currency': 'Curr',
               'fiftyTwoWeekLow': '52W L', 'fiftyTwoWeekHigh': '52W H',
@@ -142,7 +156,6 @@ def getDados(id, acao, gravaBD):
             singleResult[fields[key]] = tickerData[key]
         else:
             singleResult[fields[key]] = "N/A"
-    #results[ticker] = singleResult
     try:
         results[ticker] = singleResult
     except ValueError:
@@ -159,24 +172,9 @@ def getDados(id, acao, gravaBD):
            val = [5, precoAtual, id, marketState]
            query = executaDB("INSERT INTO cotacao(equipe_id,preco,acao_id,estado_mercado) values(%s,%s,%s,%s)",val)
 
-    # print(results[ticker]['Company']);
-    # print(results[ticker]['regularMarketPrice']);
-
-    #precoAtual = results[ticker]['regularMarketPrice']
-    #precoAbertura = results[ticker]['regularMarketOpen']
-    #precoBaixa = results[ticker]['regularMarketDayLow']
-    #fechamento = results[ticker]['close']
-    #precoAlta = results[ticker]['regularMarketDayHigh']
-    #marketState = results[ticker]['marketState']
-    #media3Meses = results[ticker]['averageDailyVolume3Month']
-    #media50Dias = results[ticker]['fiftyDayAverage']
-    #baixa52Semanas = results[ticker]['fiftyTwoWeekLow']
-    #alta52Semanas = results[ticker]['fiftyTwoWeekHigh']
-    #media200Dias = results[ticker]['twoHundredDayAverage']
-    #MudancaMercadoRegular = results[ticker]['regularMarketChange']
-    #PercentualRegularMudancaMercado = results[ticker]['regularMarketChangePercent']
-    #nomeCompleto = results[ticker]['longName'];
-
+'''
+Função para criar uma vez só a conexão com o BD
+'''
 def getConnect():
     global modo
     if modo == "prod":
@@ -193,6 +191,10 @@ def getConnect():
         print("BD DEV")
     conexao = pymysql.connect(host=host, user=user, passwd=passwd, db=db)
     return conexao
+
+'''
+Função que valida se a execução é um select, se sim, faz o select e retonna uma lista com os dados, se for outro update,delete,insert...faz a iteração com o banco
+'''
 
 def executaDB(sql,val):
     if "select" in sql.lower():
@@ -219,6 +221,7 @@ def executaDB(sql,val):
         resultado = altera(sql,val)
         return resultado
 
+
 def getDadosAcao(equipe,gravarDB):
     query = executaDB(equipe,None)
     print(query)
@@ -228,6 +231,10 @@ def getDadosAcao(equipe,gravarDB):
         id = str(query[i][0])
         getDados(id,acao,gravarDB)
         i += 1
+
+'''
+Prefiro cron XD
+'''
 
 def loop(qtime,qfuncao):
     schedule.every(.1).minutes.do(getDadosAcao)
@@ -262,12 +269,19 @@ def altera(sql,val):
     conexao.close()
     return resultado
 
+'''
+Passe uma palavra ou lista para remover caracteres especiais
+'''
+
 def removeCaracteres(palavra):
     caracteres = ["\\","*","_","{","}","[","]","(",")",">","<","#","+","-",".",",","!","?","$","%","\"",";","'",":"," a "," b "," c "," d "," e "," f "," g "," h "," i "," j "," k "," l "," m "," n "," o "," p "," q "," r "," s "," t "," u "," v "," x "," w "," y "," z "," 0 "," 1 "," 2 "," 3 "," 4 "," 5 "," 6 "," 7 "," 8 "," 9 "," in ", " para ", " is ", " to ", " the ", " of "]
     for caracter in caracteres:
         palavra = palavra.replace(caracter, " ")
     return palavra
 
+'''
+Le noticias e popula as palavras e seus totais
+'''
 def populaPalavras():
     noticias = executaDB("SELECT id,noticia_descricao FROM noticias where equipe_id = '5'", None)
     for x in noticias:
@@ -276,6 +290,7 @@ def populaPalavras():
         for y in palavras.items():
             val = [x[0], y[0]]
             noticias = executaDB("SELECT id FROM equipe5_palavra where noticia_id = '%s' AND palavra = %s limit 1", val)
+            ##Se a palavra já existe pra noticia especifica, não grava de novo
             if noticias:
                 print("achou palavra "+y[0])
                 continue
@@ -285,10 +300,15 @@ def populaPalavras():
             val = [y[0], y[1], x[0]]
             query = executaDB("INSERT INTO equipe5_palavra (palavra,quantidade,noticia_id) values(%s,%s,%s)", val)
 
+'''
+Função que faz a busca das noticias no google ou outro site se for passado no campo fontes
+
+'''
+
 def busca_noticias(acoes,fontes,gravarDB=True):
     for i in acoes:
-        print(i[0])
-        print(i[1])
+        #print(i[0])
+        #print(i[1])
         if fontes is None:
             fonte = getUrlGoogle(i[1])
             print(fonte)
@@ -296,20 +316,22 @@ def busca_noticias(acoes,fontes,gravarDB=True):
         else:
             noticia = getHtml(fonte, gravarDB, i[0])
 
-#def gerador_graficos(tipo_grafico,acao,inicio,fim):
+'''
+Gera graficos tipo linha ou 
+'''
 def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim, img=None, img_complemento=None):
     '''#http://www.w3big.com/pt/python3/python3-month-days.html
     mes_inicio = calendar.monthrange(2020, 10)
     print(mes_inicio)
     '''
 
-    #split_inicio = inicio.split("-")
-    #split_fim = fim.split("-")
+    ##inverter o padrão de data
     split_inicio = inicio.split("/")
     split_fim = fim.split("/")
     inicio = split_inicio[2]+"-"+split_inicio[1]+"-"+split_inicio[0]
     fim = split_fim[2] + "-" + split_fim[1] + "-" + split_fim[0]
 
+    #Calculos possiveis, para se gerar o gráfico
     if int(calculo) == 1:
         calculo = "AVG(c.preco)"
     elif int(calculo) == 2:
@@ -331,7 +353,7 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim, img=None, img_com
                      "AND (c.data_importacao BETWEEN %s AND DATE_SUB(%s, INTERVAL -1 DAY))"
                       "group by datafo "
                       "order by c.data_importacao",val)
-    print(valor)
+    #print(valor)
     datas = list()
     valores = list()
     empresa = ""
@@ -371,6 +393,9 @@ def gerador_graficos(tipo_grafico, acao, calculo, inicio, fim, img=None, img_com
         else:
             plt.savefig("../img/grafico_"+img_complemento+".png")
             plt.close(fig)
+'''
+Formatador de datas
+'''
 
 def data(arquivo=None,data_hoje=None,data_antes=None):
     hoje = datetime.datetime.now();
@@ -388,6 +413,11 @@ def data(arquivo=None,data_hoje=None,data_antes=None):
         hoje = hoje.strftime("%d/%m/%Y %H:%M:%S")
         return hoje
     return hoje
+
+
+'''
+Gera os dados da tabela analise, contendo mediana,moda,amplitude...dos ultimos 15 dias
+'''
 
 def analise(acoes,dias,exibir=None):
     for i in acoes:
@@ -418,6 +448,12 @@ def analise(acoes,dias,exibir=None):
             query = executaDB("INSERT INTO equipe5_analise(equipe_id,acao_id,soma,quantidade,minimo,maximo,desvio_padra,media,mediana,moda,amplitude,variacao,media_harmonica,media_geometrica,periodo_analise,quantidade_compra) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",val)
         else:
             return val
+
+'''
+Faz analise dos melhores valores de compra e venda das ações
+Regra valor da media dos últimos 15 dias+%desvio
+'''
+
 def robo(acao,nome):
     val = [acao, 15 ]
     analise = executaDB("SELECT * FROM admin_ia.equipe5_analise where acao_id=%s and periodo_analise =%s order by id desc  limit 1", val)
@@ -431,6 +467,9 @@ def robo(acao,nome):
         print(desvio)
         val = [valor_compra,valor_venda, acao,'5', comprar]
         executaDB("INSERT INTO equipe5_robo(valor_compra,valor_venda,acao_id,equipe_id,quantidade_compra) values(%s,%s,%s,%s,%s)",val)
+'''
+Menu para o bot.py, Quando for enciada palavras unicas ao bot caira neste menue
+'''
 
 def menuBot(text,chat):
     if (text.upper() == "STATUS"):
@@ -456,18 +495,18 @@ def menuBot(text,chat):
                         if robo[9] not in hoje:
                             if valor <= compra:
                                 if "comprado" not in robo[8]:
-                                    text = "COMPRA A ACAO " + str(acao[1])
+                                    text = "Aconselhada COMPRA da ACAO " + str(acao[1])
                                     text += "\nValor " + str(valor)
-                                    text += "\nCompra sujerida " + str(compra)
+                                    text += "\nCompra sugerida " + str(compra)
                                     val = [robo[0]]
                                     executaDB(
                                         "UPDATE `admin_ia`.`equipe5_robo` SET `avisou` = now() WHERE `id` = %s", val)
                                     bot.send_message(text, chat)
                             elif valor >= venda:
                                 if "vendido" not in robo[8]:
-                                    text = "VENDA A ACAO " + str(acao[1])
+                                    text = "Aconselhada VENDA da ACAO " + str(acao[1])
                                     text += "\nValor " + str(valor)
-                                    text += "\nVenda sujerida " + str(venda)
+                                    text += "\nVenda sugerida " + str(venda)
                                     val = [robo[0]]
                                     executaDB(
                                         "UPDATE `admin_ia`.`equipe5_robo` SET `avisou` = now() WHERE `id` = %s", val)
@@ -505,21 +544,21 @@ def menuBot(text,chat):
         text = ""
     elif (text.upper() == "COMPRA"):
         acoes = busca_acoes(5)
-        text = "Qual ação você gostaria de ver de informa compra? Veja o comando:\n"
+        text = "Qual ação você gostaria de informa compra? Veja o comando:\n"
         for i in acoes:
             text += "COMPRA " + i[1] + "\n"
         bot.send_message(text, chat)
         text = ""
     elif (text.upper() == "VENDA"):
         acoes = busca_acoes(5)
-        text = "Qual ação você gostaria de ver de informa compra? Veja o comando:\n"
+        text = "Qual ação você gostaria de informa compra? Veja o comando:\n"
         for i in acoes:
             text += "VENDA " + i[1] + "\n"
         bot.send_message(text, chat)
         text = ""
     elif (text.upper() == "AVISO"):
         acoes = busca_acoes(5)
-        text = "Qual ação você gostaria de ver de informa compra? Veja o comando:\n"
+        text = "Qual ação você gostaria de informar venda ou compra/ativar aviso? Veja o comando:\n"
         for i in acoes:
             text += "AVISO NAO " + i[1] + "\n"
         for i in acoes:
@@ -534,6 +573,10 @@ def menuBot(text,chat):
         text += "Escreva GRAFICO para ver as noticias de uma ação!\n"
         text += "Escreva AVISO para ver as opções de avisos!\n"
         bot.send_message(text, chat)
+
+'''
+Funções disponiveis nos menus do bot.py, Quando for enviada mais de uma palavra com espaço caira nessa função que fará a execução dos dados em si ao usuário
+'''
 
 def funcoesBot(text,chat):
     if re.search('GRAFICO ', text, re.IGNORECASE):
@@ -610,25 +653,28 @@ def funcoesBot(text,chat):
 
         text = ""
     elif re.search('VENDA ', text, re.IGNORECASE):
+        print("VENDA")
         split_text = text.split(" ")
         nome = split_text[1].upper()
         acoes = busca_acoes(5, nome)
-        for i in acoes:
-            val = [i[0]]
-            valor_robo = executaDB(
-                "SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",
-                val)
+        for acao in acoes:
+            val = [acao[0]]
+            valor_robo = executaDB("SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1", val)
             for i in valor_robo:
                 val = [i[0]]
                 print(val)
                 executaDB("UPDATE equipe5_robo SET confirmado = 'vendido' WHERE id = %s", val)
+                text = "Informada venda da açao "+acao[1] + " para informar compra use compra "+acao[1]
+                bot.send_message(text, chat)
+                text = ""
 
     elif re.search('COMPRA ', text, re.IGNORECASE):
+        print("COMPRA")
         split_text = text.split(" ")
         nome = split_text[1].upper()
         acoes = busca_acoes(5, nome)
-        for i in acoes:
-            val = [i[0]]
+        for acao in acoes:
+            val = [acao[0]]
             valor_robo = executaDB(
                 "SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1",
                 val)
@@ -636,6 +682,9 @@ def funcoesBot(text,chat):
                 val = [i[0]]
                 print(val)
                 executaDB("UPDATE equipe5_robo SET confirmado = 'comprado' WHERE id = %s", val)
+                text = "Informada compra da açao " + acao[1] + " para informar compra use venda " + acao[1]
+                bot.send_message(text, chat)
+                text = ""
 
     elif re.search('AVISO ', text, re.IGNORECASE):
         split_text = text.split(" ")
@@ -646,10 +695,12 @@ def funcoesBot(text,chat):
         else:
             acoes = busca_acoes(5, nome)
         confirmado = "naoavisar"
+        text_confirmado = "Não alertar"
         if "SIM" in modo:
             confirmado = "avisar"
-        for i in acoes:
-            val = [i[0]]
+            text_confirmado = "Alertar"
+        for acao in acoes:
+            val = [acao[0]]
             print(val)
             valor_robo = executaDB(
                 "SELECT * FROM admin_ia.equipe5_robo where acao_id = %s order by data_consulta desc limit 1", val)
@@ -657,6 +708,10 @@ def funcoesBot(text,chat):
                 val = [confirmado, i[0]]
                 print(val)
                 executaDB("UPDATE equipe5_robo SET confirmado = %s WHERE id = %s", val)
+                text = acao[1] + " modo "+ text_confirmado
+                bot.send_message(text, chat)
+                text = ""
+
     else:
         bot2.send_photo(chat_id=chat, photo=open('../img/bot.jpg', 'rb'))
         text = "O que voce deseja?\n"

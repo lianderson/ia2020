@@ -62,9 +62,9 @@ def get_last_update_id(updates):
 
 def echo_all(updates):
     if updates is None:
-        ids = ['148673856']
+        ids = ['1039114446']
         for i in ids:
-            updates = {'ok': True, 'result': [{'update_id': 791210036, 'message': {'message_id': 1023, 'from': {'id': i, 'is_bot': False, 'first_name': 'Nome', 'language_code': 'en'}, 'chat': {'id': 148673856, 'first_name': 'Name', 'type': 'private'}, 'date': 1607119112, 'text': 'STATUS'}}]}
+            updates = {'ok': True, 'result': [{'update_id': 791210036, 'message': {'message_id': 1023, 'from': {'id': i, 'is_bot': False, 'first_name': 'Nome', 'language_code': 'en'}, 'chat': {'id': 1039114446, 'first_name': 'Name', 'type': 'private'}, 'date': 1607119112, 'text': 'STATUS'}}]}
 
     for update in updates["result"]:
         try:
