@@ -119,7 +119,7 @@ def visualize_fronteiras(msamples_split,max_depth):
     plt.title('Decision Tree')
     plt.show()
 
-#visualize_fronteiras(2,max_depth=30)
+visualize_fronteiras(2,max_depth=30)
 
 
 
